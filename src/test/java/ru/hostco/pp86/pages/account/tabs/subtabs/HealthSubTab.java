@@ -13,7 +13,7 @@ public class HealthSubTab implements Openable {
 
     public static String URL = Account.URL + OtherTab.URL + "/health";
     public SelenideElement subTub = $(By.linkText("Показатели здоровья"));
-    public SelenideElement intervalStartField = $(".create-filter-block .range-date-filter");
+    public SelenideElement BeginningDateField = $(".create-filter-block .range-date-filter");
     public CalendarComponent calendar = new CalendarComponent();
 
     @Override
@@ -21,9 +21,23 @@ public class HealthSubTab implements Openable {
         return URL;
     }
 
-    public void selectStartOfInterval(int day, int month, int year) {
-        intervalStartField.click();
-        calendar.selectDay(day);
+    public HealthSubTab clickByBeginningDateField() {
+        BeginningDateField.click();
+        return this;
+    }
+
+    public void selectDate(int day, int month, int year) {
         calendar.selectMonthAndYear(month, year);
+        calendar.selectDay(day);
+    }
+
+    // todo проверить метод
+    public void setBeginningDate(String date) {
+        BeginningDateField.setValue(date);
+    }
+
+    // todo проверить метод
+    public void setEndDate(String date) {
+        BeginningDateField.setValue(date);
     }
 }
