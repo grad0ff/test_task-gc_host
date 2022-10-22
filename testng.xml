@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
 
-<suite name="User Account Tests">
-    <test verbose="2" preserve-order="true" name="Account Tests">
+<suite name="Ui Tests">
+    <test name="User Account Tests">
         <groups>
             <run>
                 <include name="authorized"/>
