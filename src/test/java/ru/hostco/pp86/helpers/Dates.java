@@ -8,14 +8,8 @@ public class Dates {
     private final int monthNumber;
     private final int year;
 
-    public Dates(int dayNumber, int monthNumber, int year) {
-        this.dayNumber = dayNumber;
-        this.monthNumber = monthNumber;
-        this.year = year;
-    }
-
-    public Dates(String fullDateWithDot) {
-        String[] date = fullDateWithDot.split("\\.");
+    public Dates(String fullDate) {
+        String[] date = fullDate.split("\\.");
         dayNumber = Integer.parseInt(date[0]);
         monthNumber = Integer.parseInt(date[1]);
         year = Integer.parseInt(date[2]);
@@ -33,7 +27,7 @@ public class Dates {
         return year;
     }
 
-    public String asStringFull() {
+    public String getFullDate() {
         return dayNumber + "." + monthNumber + "." + year;
     }
 
@@ -49,5 +43,4 @@ public class Dates {
     public int hashCode() {
         return Objects.hash(dayNumber, monthNumber, year);
     }
-
 }

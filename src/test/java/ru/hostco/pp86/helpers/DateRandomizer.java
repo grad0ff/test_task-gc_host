@@ -3,14 +3,14 @@ package ru.hostco.pp86.helpers;
 import java.time.LocalDate;
 import java.util.Random;
 
-public class DateGradomizer {
+public class DateRandomizer {
 
     /**
      * Returns pseudo-random year in the specified interval
      */
     public static int getRandomYear(int offsetBefore, int offsetAfter) {
         int currentYear = LocalDate.now().getYear();
-        int random = new Random().nextInt(offsetBefore + offsetAfter + 1);
+        int random = new Random().nextInt(Math.abs(offsetBefore) + Math.abs(offsetAfter)) + 1;
         return currentYear - offsetBefore + random;
     }
 
@@ -71,7 +71,7 @@ public class DateGradomizer {
         int monthNumber = month.numberOf();
         int maxDays = month.getMaxDays(year, month);
         int dayNumber = new Random().nextInt(maxDays) + 1;
-        return new Dates(dayNumber, monthNumber, year);
+        return new Dates(dayNumber + "." + monthNumber + "." + year);
     }
 
     /**
