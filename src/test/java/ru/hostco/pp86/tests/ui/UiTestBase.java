@@ -1,6 +1,7 @@
 package ru.hostco.pp86.tests.ui;
 
 import com.codeborne.selenide.Configuration;
+import com.codeborne.selenide.Selenide;
 import org.aeonbits.owner.ConfigFactory;
 import org.openqa.selenium.Cookie;
 import org.testng.annotations.BeforeClass;
@@ -25,28 +26,16 @@ public class UiTestBase {
         Configuration.baseUrl = "https://pp86.hostco.ru";
     }
 
+    @BeforeGroups(groups = "ui")
+    void prepareUiTest() {
+        open("");
+        Selenide.clearBrowserLocalStorage();
+        Selenide.clearBrowserCookies();
+    }
+
     @BeforeGroups(groups = {"authorized"})
     void authorize() {
         List<Cookie> cookies = createUiCookies(Map.of("connect.sid", config.getAuthCookie()));
-        open("");
         setUiCookies(cookies);
-
     }
-//
-//    @AfterMethod(groups = {"ui"})
-//    void clearBrowserLocalStorage() {
-//        System.out.println("clearBrowserLocalStorage");
-//        Selenide.clearBrowserLocalStorage();
-//    }
-//
-//    @AfterSuite(groups = {"ui"})
-//    void clearBrowserCookies() {
-//        System.out.println("clearBrowserCookies");
-//        Selenide.clearBrowserCookies();
-//    }
-//
-//    @AfterSuite
-//    void afterSuite() {
-//        Selenide.sleep(500);
-//    }
 }

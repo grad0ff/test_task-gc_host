@@ -65,8 +65,8 @@ public class DateGradomizer {
     /**
      * Returns pseudo-random date as map for specific year and month
      */
-    public static Dates randomDate(int yearOfStart, int yearOfEnd) {
-        int year = getRandomYear(yearOfStart, yearOfEnd);
+    public static Dates randomDate(int yearsBeforeActual, int yearsAfterActual) {
+        int year = getRandomYear(yearsBeforeActual, yearsAfterActual);
         Months month = getRandomMonth();
         int monthNumber = month.numberOf();
         int maxDays = month.getMaxDays(year, month);

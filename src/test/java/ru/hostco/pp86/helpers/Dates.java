@@ -4,23 +4,21 @@ import java.util.Objects;
 
 public class Dates {
 
-    private int dayNumber;
-    private int monthNumber;
-    private int year;
+    private final int dayNumber;
+    private final int monthNumber;
+    private final int year;
 
     public Dates(int dayNumber, int monthNumber, int year) {
         this.dayNumber = dayNumber;
         this.monthNumber = monthNumber;
-
         this.year = year;
     }
 
     public Dates(String fullDateWithDot) {
         String[] date = fullDateWithDot.split("\\.");
-        int dayNumber = Integer.parseInt(date[0]);
-        int monthNumber = Integer.parseInt(date[1]);
-        int year = Integer.parseInt(date[2]);
-        new Dates(dayNumber, monthNumber, year);
+        dayNumber = Integer.parseInt(date[0]);
+        monthNumber = Integer.parseInt(date[1]);
+        year = Integer.parseInt(date[2]);
     }
 
     public int getDayNumber() {
@@ -36,7 +34,7 @@ public class Dates {
     }
 
     public String asStringFull() {
-        return dayNumber + "." + monthNumber + "." + monthNumber;
+        return dayNumber + "." + monthNumber + "." + year;
     }
 
     @Override

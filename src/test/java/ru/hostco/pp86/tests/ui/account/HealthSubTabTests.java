@@ -8,6 +8,7 @@ import ru.hostco.pp86.pages.account.tabs.subtabs.HealthSubTab;
 import ru.hostco.pp86.tests.ui.UiTestBase;
 
 import static com.codeborne.selenide.Selenide.open;
+import static com.codeborne.selenide.Selenide.sleep;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Test(groups = {"ui"})
@@ -19,8 +20,8 @@ public class HealthSubTabTests extends UiTestBase {
         Dates randomDate = DateGradomizer.randomDate(1, 1);
         open(tab.getUrl());
         tab.clickByBeginningDateField().selectDate(randomDate);
+        sleep(500);
         Dates currentBeginningDate = new Dates(tab.beginningDateField.getValue());
-        assertThat(currentBeginningDate).isEqualTo(randomDate);
-        Selenide.sleep(2000);
+        assertThat(currentBeginningDate.asStringFull()).isEqualTo(randomDate.asStringFull());
     }
 }
