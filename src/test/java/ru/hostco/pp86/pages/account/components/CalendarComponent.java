@@ -11,7 +11,7 @@ import static com.codeborne.selenide.Selenide.$$;
 
 public class CalendarComponent {
 
-    public SelenideElement calendar = $(".ui-datepicker-calendar-container");
+    public SelenideElement component = $(".ui-datepicker-calendar-container");
     public SelenideElement monthLabel = $(".ui-datepicker-month");
     public SelenideElement yearLabel = $(".ui-datepicker-year");
 //    public SelenideElement monthAndYearLabel = $(".ui-state-active");
@@ -23,37 +23,22 @@ public class CalendarComponent {
         int deltaOfYear = year - currentYear;
         int deltaOfMonth = month - currentMonthOrder;
         int scrollCount = deltaOfYear * 12 + deltaOfMonth;
-        if (scrollCount < 0) fewScrollToPrev(Math.abs(scrollCount));
-        else fewScrollToNext(Math.abs(scrollCount));
-
+        if (scrollCount < 0) fewScrollToPrevDay(Math.abs(scrollCount));
+        else fewScrollToNextDay(Math.abs(scrollCount));
         return this;
     }
 
-    public CalendarComponent fewScrollToNext(int count) {
+    public CalendarComponent fewScrollToNextDay(int count) {
         for (int i = 0; i < count; i++) {
             $(".ui-datepicker-next").click();
         }
-
         return this;
     }
 
-    public CalendarComponent singleScrollToNext() {
-        $(".ui-datepicker-next").click();
-
-        return this;
-    }
-
-    public CalendarComponent fewScrollToPrev(int count) {
+    public CalendarComponent fewScrollToPrevDay(int count) {
         for (int i = 0; i < count; i++) {
             $(".ui-datepicker-prev").click();
         }
-
-        return this;
-    }
-
-    public CalendarComponent singleScrollToPrev() {
-        $(".ui-datepicker-prev").click();
-
         return this;
     }
 
@@ -64,7 +49,6 @@ public class CalendarComponent {
 
     public CalendarComponent selectYear(int year) {
         $("[draggable='false'] ").$(By.linkText(String.valueOf(year))).click();
-
         return this;
     }
 
