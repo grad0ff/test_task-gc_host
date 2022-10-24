@@ -5,80 +5,93 @@ import java.util.Random;
 
 public class DateRandomizer {
 
+    private static final int actualYear = LocalDate.now().getYear();
+    private static final int actualMonth = LocalDate.now().getMonthValue();
+    private static final int actualDay = LocalDate.now().getDayOfMonth();
+
     /**
      * Returns pseudo-random year in the specified interval
      */
-    public static int getRandomYear(int offsetBefore, int offsetAfter) {
-        int currentYear = LocalDate.now().getYear();
-        int random = new Random().nextInt(Math.abs(offsetBefore) + Math.abs(offsetAfter)) + 1;
-        return currentYear - offsetBefore + random;
+    public static int randomYear(int first, int last) {
+        int range = last - first;
+        int random = new Random().nextInt(range + 1);
+        return first + random;
     }
 
     /**
-     * Returns pseudo-random year in the default interval
+     * Returns pseudo-random month of year
      */
-    public static int getRandomYear() {
-        return getRandomYear(100, 100);
+    public static Months randomMonth() {
+        return randomMonth(1, 12);
     }
 
     /**
-     * Returns pseudo-random month
+     * Returns pseudo-random month from specified interval
      */
-    public static Months getRandomMonth() {
-        int monthNumber = new Random().nextInt(12) + 1;
-        switch (monthNumber) {
-            case 1:
+    public static Months randomMonth(int first, int last) {
+        int range = last - first;
+        int random = new Random().nextInt(range + 1);
+        switch (first + random) {
+            case 0:
                 return Months.JANUARY;
-            case 2:
+            case 1:
                 return Months.FEBRUARY;
-            case 3:
+            case 2:
                 return Months.MARCH;
-            case 4:
+            case 3:
                 return Months.APRIL;
-            case 5:
+            case 4:
                 return Months.MAY;
-            case 6:
+            case 5:
                 return Months.JUNE;
-            case 7:
+            case 6:
                 return Months.JULY;
-            case 8:
+            case 7:
                 return Months.AUGUST;
-            case 9:
+            case 8:
                 return Months.SEPTEMBER;
-            case 10:
+            case 9:
                 return Months.OCTOBER;
-            case 11:
+            case 10:
                 return Months.NOVEMBER;
-            case 12:
+            case 11:
                 return Months.DECEMBER;
         }
         return null;
     }
 
     /**
-     * Returns pseudo-random day for default month
+     * Returns pseudo-random day for actual month of actual year
      */
-    public static int getRandomDayNumber() {
+    public static int randomDay() {
         return new Random().nextInt(31) + 1;
     }
 
     /**
-     * Returns pseudo-random date as map for specific year and month
+     * Returns pseudo-random date for specific year and month
      */
-    public static Dates randomDate(int yearsBeforeActual, int yearsAfterActual) {
-        int year = getRandomYear(yearsBeforeActual, yearsAfterActual);
-        Months month = getRandomMonth();
+    public static Dates randomDateOfPast(int fromYear) {
+        int year = randomYear(fromYear, actualYear);
+        Months month = randomMonth(1, actualMonth);
+        return createDate(year, month);
+    }
+
+    /**
+     * Returns pseudo-random date for specific year and month
+     */
+    public static Dates randomDateOfFuture(int toYear) {
+        int year = randomYear(actualYear, toYear);
+        Months month = randomMonth(actualMonth, 12);
+        return createDate(year, month);
+
+    }
+
+    private static Dates createDate(int year, Months month) {
         int monthNumber = month.numberOf();
         int maxDays = month.getMaxDays(year, month);
         int dayNumber = new Random().nextInt(maxDays) + 1;
         return new Dates(dayNumber + "." + monthNumber + "." + year);
     }
 
-    /**
-     * Returns pseudo-random date as map for default year and month
-     */
-    public static Dates randomDate() {
-        return randomDate(100, 100);
-    }
 }
 

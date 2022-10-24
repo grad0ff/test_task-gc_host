@@ -11,7 +11,7 @@ public class ReadingsFormActor {
     static ReadingsFormComponent readingsForm = new ReadingsFormComponent();
 
     static void fillAllData() {
-        Dates randomDate = DateRandomizer.randomDate(1, -1);
+        Dates randomDate = DateRandomizer.randomDateOfPast(2020);
         int randomHour = new Random().nextInt(25);
         int randomMinute = new Random().nextInt(61);
 

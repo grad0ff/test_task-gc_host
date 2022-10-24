@@ -22,23 +22,22 @@ public class HealthSubTabTests extends UiTestBase {
     @Test(groups = "authorized")
     void writeTemperatureIndicatorTest() {
         ReadingsFormComponent readingsForm = subTab.readingsForm;
-        Dates randomDate = DateRandomizer.randomDate(1, 0);
+        Dates randomDate = DateRandomizer.randomDateOfPast(2022);
         String time = "13:03";
         double temperature = 36.6;
 
         step("Open health sub tab in account page in browser", () -> open(subTab.getUrl()));
         step("Select random date of beginning in calendar", () -> subTab.clickByAddReadingButton());
         readingsForm.clickByCalendarLink().calendar.component.shouldBe(visible).shouldBe(interactable);
+        sleep(500);
         readingsForm.selectTime(time);
-        readingsForm.selectDate(randomDate)
-                .setTemperature(temperature);
+        readingsForm.selectDate(randomDate).setTemperature(temperature);
         sleep(3000);
-
     }
 
     @Test(groups = "authorized")
     void setBeginningDateTest() {
-        Dates randomDate = DateRandomizer.randomDate(1, -1);
+        Dates randomDate = DateRandomizer.randomDateOfPast(2022);
 
         step("Open health sub tab in account page in browser", () -> open(subTab.getUrl()));
         step("Select random date of beginning in calendar", () -> {
@@ -56,7 +55,7 @@ public class HealthSubTabTests extends UiTestBase {
     @Test(groups = "authorized")
     void setEndDateTest() {
         HealthSubTab subTab = new HealthSubTab();
-        Dates randomDate = DateRandomizer.randomDate(1, 0);
+        Dates randomDate = DateRandomizer.randomDateOfFuture(2023);
 
         step("Open health sub tab in account page in browser", () -> open(subTab.getUrl()));
         step("Select random date of end in calendar", () -> {
@@ -74,8 +73,8 @@ public class HealthSubTabTests extends UiTestBase {
     @Test(groups = "authorized")
     void setDatesFilterTest() {
         HealthSubTab subTab = new HealthSubTab();
-        Dates randomBeginningDate = DateRandomizer.randomDate(1, -1);
-        Dates randomEndDate = DateRandomizer.randomDate(-1, 1);
+        Dates randomBeginningDate = DateRandomizer.randomDateOfPast(2022);
+        Dates randomEndDate = DateRandomizer.randomDateOfFuture(2023);
 
         step("Open health sub tab in account page in browser", () -> open(subTab.getUrl()));
         step("Select random date of beginning in calendar", () -> {
@@ -85,8 +84,7 @@ public class HealthSubTabTests extends UiTestBase {
         });
         step("Select random date of end in calendar", () -> {
             subTab.endDateField.shouldBe(visible);
-            subTab.clickByEndDateField()
-                    .calendar.component.shouldBe(visible).shouldBe(interactable);
+            subTab.clickByEndDateField().calendar.component.shouldBe(visible).shouldBe(interactable);
             subTab.selectDate(randomEndDate);
         });
         step("Check that dates set correctly", () -> {
