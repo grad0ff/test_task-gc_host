@@ -1,4 +1,4 @@
-package ru.hostco.pp86.helpers;
+package ru.hostco.pp86.data;
 
 public enum Months {
 
@@ -23,32 +23,32 @@ public enum Months {
         this.russianName = russianName;
     }
 
-    public static Months valueOfByRussian(String russianName) {
+    public static Months valueByNumber(int number) {
+        for (Months month : Months.values()) {
+            if (month.numberOf() == number) return month;
+        }
+        throw new NullPointerException();
+    }
+
+    public static Months valueByRussian(String russianName) {
         for (Months month : Months.values()) {
             if (month.russianName.equals(russianName)) return month;
         }
         throw new NullPointerException();
     }
 
-    public static Months getNumber(String russianName) {
-        for (Months month : Months.values()) {
-            if (month.russianName.equals(russianName)) return month;
-        }
-        throw new NullPointerException();
-    }
-
-    public int getMaxDays() {
+    public int maxDays() {
         return maxDays;
     }
 
-    public int getMaxDays(int year, Months month) {
-        if ((year % 100 == 0 || year % 4 == 0) && month == Months.FEBRUARY) {
+    public int maxDays(int year) {
+        if (this == FEBRUARY && (year % 100 == 0 || year % 4 == 0)) {
             maxDays++;
         }
         return maxDays;
     }
 
-    public String getRussianName() {
+    public String russianName() {
         return russianName;
     }
 

@@ -1,7 +1,8 @@
 package ru.hostco.pp86.pages.account.tabs.subtabs;
 
 import com.codeborne.selenide.SelenideElement;
-import ru.hostco.pp86.helpers.Dates;
+import io.qameta.allure.Step;
+import ru.hostco.pp86.data.Date;
 import ru.hostco.pp86.pages.Openable;
 import ru.hostco.pp86.pages.account.Account;
 import ru.hostco.pp86.pages.account.components.CalendarComponent;
@@ -25,25 +26,28 @@ public class HealthSubTab implements Openable {
         return URL;
     }
 
+    @Step("Click by add reading button")
     public HealthSubTab clickByAddReadingButton() {
         addReadingButton.click();
         return this;
     }
 
+    @Step("Click by beginning date field")
     public HealthSubTab clickByBeginningDateField() {
         beginningDateField.click();
         return this;
     }
 
-    public HealthSubTab clickByEndDateField() {
+    @Step("Click by ending date field")
+    public HealthSubTab clickByEndingDateField() {
         endDateField.click();
         return this;
     }
 
-    public HealthSubTab selectDate(Dates date) {
+    @Step("Select date in calendar")
+    public void selectDate(Date date) {
         calendar.selectMonthAndYear(date.getMonthNumber(), date.getYear());
         calendar.selectDay(date.getDayNumber());
-        return this;
     }
 
     // todo проверить метод

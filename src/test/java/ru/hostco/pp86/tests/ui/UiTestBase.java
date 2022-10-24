@@ -2,6 +2,8 @@ package ru.hostco.pp86.tests.ui;
 
 import com.codeborne.selenide.Configuration;
 import com.codeborne.selenide.Selenide;
+import com.codeborne.selenide.logevents.SelenideLogger;
+import io.qameta.allure.selenide.AllureSelenide;
 import org.aeonbits.owner.ConfigFactory;
 import org.openqa.selenium.Cookie;
 import org.openqa.selenium.MutableCapabilities;
@@ -13,8 +15,10 @@ import ru.hostco.pp86.config.CredentialsConfig;
 
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 
 import static com.codeborne.selenide.Selenide.open;
+import static io.qameta.allure.selenide.LogType.BROWSER;
 import static ru.hostco.pp86.helpers.Cookies.createUiCookies;
 import static ru.hostco.pp86.helpers.Cookies.setUiCookies;
 
@@ -43,6 +47,10 @@ public class UiTestBase {
 
     @BeforeGroups(groups = "ui")
     void prepareUiTest() {
+        SelenideLogger.addListener("Allure Selenide Listener", new AllureSelenide()
+                .screenshots(true)
+                .includeSelenideSteps(true)
+                .enableLogs(BROWSER, Level.ALL));
         open("");
         Selenide.clearBrowserLocalStorage();
         Selenide.clearBrowserCookies();

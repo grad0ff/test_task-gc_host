@@ -1,7 +1,12 @@
 package ru.hostco.pp86.helpers;
 
+import ru.hostco.pp86.data.Date;
+import ru.hostco.pp86.data.Months;
+
 import java.time.LocalDate;
 import java.util.Random;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class DateRandomizer {
 
@@ -12,10 +17,12 @@ public class DateRandomizer {
     /**
      * Returns pseudo-random year in the specified interval
      */
-    public static int randomYear(int first, int last) {
-        int range = last - first;
+    public static int randomYear(int start, int end) {
+        assertThat(end).isPositive();
+        assertThat(start).isPositive().isLessThanOrEqualTo(end);
+        int range = end - start;
         int random = new Random().nextInt(range + 1);
-        return first + random;
+        return start + random;
     }
 
     /**
@@ -28,10 +35,12 @@ public class DateRandomizer {
     /**
      * Returns pseudo-random month from specified interval
      */
-    public static Months randomMonth(int first, int last) {
-        int range = last - first;
+    public static Months randomMonth(int start, int end) {
+        assertThat(end).isPositive();
+        assertThat(start).isPositive().isLessThanOrEqualTo(end);
+        int range = end - start;
         int random = new Random().nextInt(range + 1);
-        switch (first + random) {
+        switch (start + random) {
             case 0:
                 return Months.JANUARY;
             case 1:
@@ -70,28 +79,30 @@ public class DateRandomizer {
     /**
      * Returns pseudo-random date for specific year and month
      */
-    public static Dates randomDateOfPast(int fromYear) {
+    public static Date randomDateOfPast(int fromYear) {
+        assertThat(fromYear).isPositive().isLessThanOrEqualTo(LocalDate.now().getYear());
         int year = randomYear(fromYear, actualYear);
         Months month = randomMonth(1, actualMonth);
+        assertThat(month).isNotNull();
         return createDate(year, month);
     }
 
     /**
      * Returns pseudo-random date for specific year and month
      */
-    public static Dates randomDateOfFuture(int toYear) {
+    public static Date randomDateOfFuture(int toYear) {
+        assertThat(toYear).isPositive().isGreaterThanOrEqualTo(LocalDate.now().getYear());
         int year = randomYear(actualYear, toYear);
         Months month = randomMonth(actualMonth, 12);
+        assertThat(month).isNotNull();
         return createDate(year, month);
 
     }
 
-    private static Dates createDate(int year, Months month) {
+    private static Date createDate(int year, Months month) {
         int monthNumber = month.numberOf();
-        int maxDays = month.getMaxDays(year, month);
+        int maxDays = month.maxDays(year);
         int dayNumber = new Random().nextInt(maxDays) + 1;
-        return new Dates(dayNumber + "." + monthNumber + "." + year);
+        return new Date(dayNumber, monthNumber, year);
     }
-
 }
-

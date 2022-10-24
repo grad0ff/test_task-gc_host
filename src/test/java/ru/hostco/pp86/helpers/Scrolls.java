@@ -1,25 +1,25 @@
 package ru.hostco.pp86.helpers;
 
-import static java.lang.Integer.parseInt;
+import ru.hostco.pp86.data.Months;
+import ru.hostco.pp86.data.Time;
 
 public class Scrolls {
 
-    public static int[] getTimeScrolls(String newTimeAsString, int actualHours, int actualMinutes) {
-        String[] splitTime = newTimeAsString.split(":");
-        int hourScrollCount = timeScrolls(parseInt(splitTime[0]), actualHours, 24);
-        int minutesScrollCount = timeScrolls(parseInt(splitTime[1]), actualMinutes, 60);
+    public static int[] getTimeScrollCount(Time newTime, int actualHours, int actualMinutes) {
+        int hourScrollCount = timeScrolls(newTime.getHours(), actualHours, 24);
+        int minutesScrollCount = timeScrolls(newTime.getMinutes(), actualMinutes, 60);
         return new int[]{hourScrollCount, minutesScrollCount};
     }
 
-    public static int timeScrolls(int newTimeEntity, int actualTimeEntity, int divider) {
-        int delta = newTimeEntity - actualTimeEntity;
+    public static int timeScrolls(int newTimeElement, int actualTimeElement, int divider) {
+        int delta = newTimeElement - actualTimeElement;
         int scrollCount = (Math.abs(delta)) % divider;
-        if (delta < 0) return ~scrollCount + 1;
+        if (delta < 0) return scrollCount * (-1);
         return scrollCount;
     }
 
-    public static int getDateScroll(int newMonth, int newYear, String actualMonth, int actualYear) {
-        int actualMonthNumber = Months.valueOfByRussian(actualMonth).numberOf();
+    public static int getDateScrollCount(int newMonth, int newYear, String actualMonth, int actualYear) {
+        int actualMonthNumber = Months.valueByRussian(actualMonth).numberOf();
         int deltaOfYear = newYear - actualYear;
         int deltaOfMonth = newMonth - actualMonthNumber;
         return deltaOfYear * 12 + deltaOfMonth;
