@@ -1,4 +1,4 @@
-package ru.hostco.pp86.data;
+package ru.hostco.pp86.helpers;
 
 import java.time.LocalTime;
 import java.util.Objects;

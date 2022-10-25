@@ -5,8 +5,8 @@
     <test name="User Account Tests">
         <groups>
             <run>
-                <include name="authorized"/>
-                <include name="ui"/>
+                <include name="AUTHORIZED"/>
+                <include name="UI"/>
             </run>
         </groups>
         <packages>

@@ -24,5 +24,4 @@ public class Cookies {
     public static void setUiCookies(List<Cookie> cookies) {
         cookies.forEach(WebDriverRunner.getWebDriver().manage()::addCookie);
     }
-
 }

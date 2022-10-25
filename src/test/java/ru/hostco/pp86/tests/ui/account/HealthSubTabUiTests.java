@@ -1,17 +1,24 @@
 package ru.hostco.pp86.tests.ui.account;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import io.restassured.http.ContentType;
 import org.apache.commons.math3.util.Precision;
 import org.testng.annotations.Test;
-import ru.hostco.pp86.data.Date;
-import ru.hostco.pp86.data.HealthIndicators;
-import ru.hostco.pp86.data.Time;
+import ru.hostco.pp86.data.Indicators;
+import ru.hostco.pp86.helpers.Date;
 import ru.hostco.pp86.helpers.DateRandomizer;
+import ru.hostco.pp86.helpers.Time;
 import ru.hostco.pp86.helpers.TimeRandomizer;
+import ru.hostco.pp86.models.ReadingPojoModel;
 import ru.hostco.pp86.pages.account.components.ReadingsFormComponent;
 import ru.hostco.pp86.pages.account.components.ReadingsTableComponent;
 import ru.hostco.pp86.pages.account.tabs.subtabs.HealthSubTab;
 import ru.hostco.pp86.tests.ui.TestBase;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Random;
 
 import static com.codeborne.selenide.Condition.text;
@@ -19,14 +26,17 @@ import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.open;
 import static com.codeborne.selenide.Selenide.sleep;
 import static io.qameta.allure.Allure.step;
+import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
+import static ru.hostco.pp86.helpers.Indicators.randomValue;
 
-@Test(groups = {"ui", "authorized"}, testName = "Health sub tab tests")
-public class HealthSubTabTests extends TestBase {
+@Test(groups = {"UI", "AUTHORIZED"}, testName = "Health sub tab tests")
+public class HealthSubTabUiTests extends TestBase {
 
     HealthSubTab subTab = new HealthSubTab();
+    Gson gson = new GsonBuilder().serializeNulls().setPrettyPrinting().create();
 
-    @Test(groups = "authorized")
+    @Test(groups = "AUTHORIZED")
     void addTemperatureReadingTest() {
         ReadingsFormComponent readingsForm = subTab.readingsForm;
         ReadingsTableComponent readingsTable = new ReadingsTableComponent();
@@ -49,14 +59,14 @@ public class HealthSubTabTests extends TestBase {
         step("Check that readingTable contains data", () -> {
             readingsTable.firstReading.shouldHave(
                     text(date + " " + time),
-                    text(HealthIndicators.TEMPERATURE.text()),
+                    text(Indicators.TEMPERATURE.text()),
                     text(String.valueOf(temperature))
             );
         });
-//        delete record with API todo
     }
 
-    @Test(groups = "authorized")
+
+    @Test(groups = "AUTHORIZED")
     void setBeginningDateTest() {
         Date randomDate = DateRandomizer.randomDateOfPast(2022);
 
@@ -75,7 +85,7 @@ public class HealthSubTabTests extends TestBase {
         });
     }
 
-    @Test(groups = "authorized")
+    @Test(groups = "AUTHORIZED")
     void setEndingDateTest() {
         HealthSubTab subTab = new HealthSubTab();
         Date randomDate = DateRandomizer.randomDateOfFuture(2023);
@@ -95,7 +105,7 @@ public class HealthSubTabTests extends TestBase {
         });
     }
 
-    @Test(groups = "authorized")
+    @Test(groups = "AUTHORIZED")
     void setDatesFilterTest() {
         HealthSubTab subTab = new HealthSubTab();
         Date randomBeginningDate = DateRandomizer.randomDateOfPast(2022);
@@ -126,7 +136,7 @@ public class HealthSubTabTests extends TestBase {
     }
 
     //todo
-    @Test(groups = "authorized")
+    @Test(groups = "AUTHORIZED")
     void resetDatesFilterTest() {
     }
 }

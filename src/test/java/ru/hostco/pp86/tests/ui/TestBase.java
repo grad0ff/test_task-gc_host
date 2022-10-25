@@ -10,7 +10,7 @@ import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeGroups;
-import org.testng.annotations.Test;
+import org.testng.annotations.BeforeTest;
 import ru.hostco.pp86.config.CredentialsConfig;
 import ru.hostco.pp86.config.EnvironmentConfig;
 import ru.hostco.pp86.data.Browsers;
@@ -24,42 +24,45 @@ import static io.qameta.allure.selenide.LogType.BROWSER;
 import static ru.hostco.pp86.helpers.Cookies.createUiCookies;
 import static ru.hostco.pp86.helpers.Cookies.setUiCookies;
 
-@Test(groups = {"ui"})
 public class TestBase {
 
-    protected CredentialsConfig credentialsConfig = ConfigFactory.create(CredentialsConfig.class);
-    protected EnvironmentConfig environmentConfig = ConfigFactory.create(EnvironmentConfig.class);
+    protected CredentialsConfig authConfig = ConfigFactory.create(CredentialsConfig.class);
+    protected EnvironmentConfig envConfig = ConfigFactory.create(EnvironmentConfig.class);
 
-    @BeforeClass
-    public void beforeAll() {
-        configureDriver(Browsers.FIREFOX);
-    }
-
-    private void configureDriver(Browsers browser) {
-        String browserName = browser.name().toLowerCase();
-        String browserVersion = browser.version().toLowerCase();
-        Configuration.browser = browserName;
-        Configuration.browserCapabilities = getCapabilities(browserName, browserVersion);
-        Configuration.baseUrl = environmentConfig.getBaseUrl();
-        Configuration.remote = environmentConfig.getRemoteUrl();
+    @BeforeClass(groups = "ui")
+    protected void beforeUiTests() {
+        configureDriver(Browsers.CHROME);
     }
 
     @BeforeGroups(groups = "ui")
-    void prepareUiTest() {
-        SelenideLogger.addListener("Allure Selenide Listener", new AllureSelenide()
-                .screenshots(true)
-                .savePageSource(false)
-                .includeSelenideSteps(true)
-                .enableLogs(BROWSER, Level.WARNING));
+    protected void prepareUiTest() {
         open("");
         Selenide.clearBrowserLocalStorage();
         Selenide.clearBrowserCookies();
     }
 
     @BeforeGroups(groups = {"authorized"})
-    void authorize() {
-        List<Cookie> cookies = createUiCookies(Map.of("connect.sid", credentialsConfig.getAuthCookie()));
+    protected void authorize() {
+        List<Cookie> cookies = createUiCookies(Map.of(authConfig.authCookieName(), authConfig.authCookieValue()));
         setUiCookies(cookies);
+    }
+
+    @BeforeTest(groups = "ui")
+    protected void addListener() {
+        SelenideLogger.addListener("Allure Selenide Listener", new AllureSelenide()
+                .screenshots(true)
+                .savePageSource(false)
+                .includeSelenideSteps(true)
+                .enableLogs(BROWSER, Level.WARNING));
+    }
+
+    private void configureDriver(Browsers browser) {
+        String browserName = browser.name().toLowerCase();
+        String browserVersion = browser.version().toLowerCase();
+        Configuration.browser = browserName;
+//        Configuration.browserCapabilities = getCapabilities(browserName, browserVersion);
+        Configuration.baseUrl = envConfig.getBaseUrl();
+//        Configuration.remote = environmentConfig.getRemoteUrl();
     }
 
     private MutableCapabilities getCapabilities(String browserName, String browserVersion) {

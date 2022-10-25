@@ -12,5 +12,8 @@ public interface CredentialsConfig extends Config {
     String getPassword();
 
     @Key("authCookieValue")
-    String getAuthCookie();
+    String authCookieValue();
+
+    @Key("authCookieName")
+    String authCookieName();
 }

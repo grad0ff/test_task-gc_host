@@ -2,7 +2,7 @@ package ru.hostco.pp86.pages.account.components;
 
 import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
-import ru.hostco.pp86.data.Date;
+import ru.hostco.pp86.helpers.Date;
 import ru.hostco.pp86.helpers.Scrolls;
 
 import static com.codeborne.selenide.Condition.text;

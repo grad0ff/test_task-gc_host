@@ -1,7 +1,7 @@
 package ru.hostco.pp86.pages.account.tabs.subtabs;
 
 import com.codeborne.selenide.SelenideElement;
-import ru.hostco.pp86.data.Date;
+import ru.hostco.pp86.helpers.Date;
 import ru.hostco.pp86.pages.Openable;
 import ru.hostco.pp86.pages.account.Account;
 import ru.hostco.pp86.pages.account.components.CalendarComponent;
