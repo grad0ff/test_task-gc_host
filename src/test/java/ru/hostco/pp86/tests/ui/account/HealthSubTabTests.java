@@ -1,14 +1,16 @@
 package ru.hostco.pp86.tests.ui.account;
 
+import org.apache.commons.math3.util.Precision;
 import org.testng.annotations.Test;
 import ru.hostco.pp86.data.Date;
 import ru.hostco.pp86.data.HealthIndicators;
 import ru.hostco.pp86.data.Time;
 import ru.hostco.pp86.helpers.DateRandomizer;
+import ru.hostco.pp86.helpers.TimeRandomizer;
 import ru.hostco.pp86.pages.account.components.ReadingsFormComponent;
 import ru.hostco.pp86.pages.account.components.ReadingsTableComponent;
 import ru.hostco.pp86.pages.account.tabs.subtabs.HealthSubTab;
-import ru.hostco.pp86.tests.ui.UiTestBase;
+import ru.hostco.pp86.tests.ui.TestBase;
 
 import java.util.Random;
 
@@ -20,7 +22,7 @@ import static io.qameta.allure.Allure.step;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Test(groups = {"ui", "authorized"}, testName = "Health sub tab tests")
-public class HealthSubTabTests extends UiTestBase {
+public class HealthSubTabTests extends TestBase {
 
     HealthSubTab subTab = new HealthSubTab();
 
@@ -29,8 +31,8 @@ public class HealthSubTabTests extends UiTestBase {
         ReadingsFormComponent readingsForm = subTab.readingsForm;
         ReadingsTableComponent readingsTable = new ReadingsTableComponent();
         Date date = Date.today();
-        Time time = Time.now();
-        double temperature = 36.3 + (new Random().nextInt(5) * 0.1);
+        Time time = TimeRandomizer.randomTime(0, 2);
+        double temperature = Precision.round(36.3 + new Random().nextDouble(), 1);
 
         step("Open health sub tab in browser", () -> open(subTab.getUrl()));
         step("Click by indicator adding button", () -> subTab.clickByAddReadingButton());
@@ -46,7 +48,7 @@ public class HealthSubTabTests extends UiTestBase {
         step("click by submit", readingsForm::clickBySubmit);
         step("Check that readingTable contains data", () -> {
             readingsTable.firstReading.shouldHave(
-//                    text(date + " " + time),
+                    text(date + " " + time),
                     text(HealthIndicators.TEMPERATURE.text()),
                     text(String.valueOf(temperature))
             );
@@ -67,12 +69,14 @@ public class HealthSubTabTests extends UiTestBase {
         step("Check that date set correctly", () -> {
             sleep(1000);
             Date currentBeginningDate = new Date(subTab.beginningDateField.getValue());
-            assertThat(currentBeginningDate.toString()).isEqualTo(randomDate.toString());
+            assertThat(currentBeginningDate.toString())
+                    .as("Beginning date assertion FAILED")
+                    .isEqualTo(randomDate.toString());
         });
     }
 
     @Test(groups = "authorized")
-    void setEndDateTest() {
+    void setEndingDateTest() {
         HealthSubTab subTab = new HealthSubTab();
         Date randomDate = DateRandomizer.randomDateOfFuture(2023);
 
@@ -85,7 +89,9 @@ public class HealthSubTabTests extends UiTestBase {
         step("Check that date set correctly", () -> {
             sleep(1000);
             Date currentEndDate = new Date(subTab.endDateField.getValue());
-            assertThat(currentEndDate.toString()).isEqualTo(randomDate.toString());
+            assertThat(currentEndDate.toString())
+                    .as("Ending date assertion FAILED")
+                    .isEqualTo(randomDate.toString());
         });
     }
 
@@ -93,7 +99,7 @@ public class HealthSubTabTests extends UiTestBase {
     void setDatesFilterTest() {
         HealthSubTab subTab = new HealthSubTab();
         Date randomBeginningDate = DateRandomizer.randomDateOfPast(2022);
-        Date randomEndDate = DateRandomizer.randomDateOfFuture(2023);
+        Date randomEndingDate = DateRandomizer.randomDateOfFuture(2023);
 
         step("Open health sub tab", () -> open(subTab.getUrl()));
         step("Select random date of beginning", () -> {
@@ -104,14 +110,18 @@ public class HealthSubTabTests extends UiTestBase {
         step("Select random date of end", () -> {
             subTab.endDateField.shouldBe(visible);
             subTab.clickByEndingDateField().calendar.component.shouldBe(visible);
-            subTab.selectDate(randomEndDate);
+            subTab.selectDate(randomEndingDate);
         });
         step("Check that dates set correctly", () -> {
             sleep(1000);
             Date currentBeginningDate = new Date(subTab.beginningDateField.getValue());
-            assertThat(currentBeginningDate.toString()).as("Beginning Date Assertion FAILED").isEqualTo(randomBeginningDate.toString());
+            assertThat(currentBeginningDate.toString())
+                    .as("Beginning date assertion FAILED")
+                    .isEqualTo(randomBeginningDate.toString());
             Date currentEndDate = new Date(subTab.endDateField.getValue());
-            assertThat(currentEndDate.toString()).as("End Date Assertion FAILED!").isEqualTo(randomEndDate.toString());
+            assertThat(currentEndDate.toString())
+                    .as("Ending date assertion FAILED")
+                    .isEqualTo(randomEndingDate.toString());
         });
     }
 

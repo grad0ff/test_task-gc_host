@@ -10,23 +10,25 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class DateRandomizer {
 
-    private static final int actualYear = LocalDate.now().getYear();
-    private static final int actualMonth = LocalDate.now().getMonthValue();
-    private static final int actualDay = LocalDate.now().getDayOfMonth();
+    private static final int ACTUAL_YEAR = LocalDate.now().getYear();
+    private static final int MONTH_VALUE = LocalDate.now().getMonthValue();
+    private static final int DAY_OF_MONTH = LocalDate.now().getDayOfMonth();
 
     /**
-     * Returns pseudo-random year in the specified interval
+     * Returns pseudo-random year in specified interval
      */
     public static int randomYear(int start, int end) {
         assertThat(end).isPositive();
-        assertThat(start).isPositive().isLessThanOrEqualTo(end);
+        assertThat(start)
+                .isPositive()
+                .isLessThanOrEqualTo(end);
         int range = end - start;
         int random = new Random().nextInt(range + 1);
         return start + random;
     }
 
     /**
-     * Returns pseudo-random month of year
+     * Returns pseudo-random month
      */
     public static Months randomMonth() {
         return randomMonth(1, 12);
@@ -37,10 +39,13 @@ public class DateRandomizer {
      */
     public static Months randomMonth(int start, int end) {
         assertThat(end).isPositive();
-        assertThat(start).isPositive().isLessThanOrEqualTo(end);
+        assertThat(start)
+                .isPositive()
+                .isLessThanOrEqualTo(end);
         int range = end - start;
-        int random = new Random().nextInt(range + 1);
-        switch (start + random) {
+        int random = new Random().nextInt(range);
+        int aSwitch = start + random;
+        switch (aSwitch) {
             case 0:
                 return Months.JANUARY;
             case 1:
@@ -77,23 +82,27 @@ public class DateRandomizer {
     }
 
     /**
-     * Returns pseudo-random date for specific year and month
+     * Returns pseudo-random date for specific year of past
      */
     public static Date randomDateOfPast(int fromYear) {
-        assertThat(fromYear).isPositive().isLessThanOrEqualTo(LocalDate.now().getYear());
-        int year = randomYear(fromYear, actualYear);
-        Months month = randomMonth(1, actualMonth);
+        assertThat(fromYear)
+                .isPositive()
+                .isLessThanOrEqualTo(LocalDate.now().getYear());
+        int year = randomYear(fromYear, ACTUAL_YEAR);
+        Months month = randomMonth(1, MONTH_VALUE);
         assertThat(month).isNotNull();
         return createDate(year, month);
     }
 
     /**
-     * Returns pseudo-random date for specific year and month
+     * Returns pseudo-random date for specific year of future
      */
     public static Date randomDateOfFuture(int toYear) {
-        assertThat(toYear).isPositive().isGreaterThanOrEqualTo(LocalDate.now().getYear());
-        int year = randomYear(actualYear, toYear);
-        Months month = randomMonth(actualMonth, 12);
+        assertThat(toYear)
+                .isPositive()
+                .isGreaterThanOrEqualTo(LocalDate.now().getYear());
+        int year = randomYear(ACTUAL_YEAR, toYear);
+        Months month = randomMonth(MONTH_VALUE, 12);
         assertThat(month).isNotNull();
         return createDate(year, month);
 

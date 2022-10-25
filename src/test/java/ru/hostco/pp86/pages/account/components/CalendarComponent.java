@@ -25,7 +25,7 @@ public class CalendarComponent {
         return this;
     }
 
-    @Step("Select month and year: {month}\\.{year}")
+    @Step("Select month and year")
     public CalendarComponent selectMonthAndYear(int month, int year) {
         int scrollCount = Scrolls.getDateScrollCount(month, year, monthLabel.text(), parseInt(yearLabel.text()));
         if (scrollCount < 0) fewScrollToPrevDay(Math.abs(scrollCount));
@@ -47,7 +47,7 @@ public class CalendarComponent {
         }
     }
 
-    @Step("Select day: {day}")
+    @Step("Select day")
     public void selectDay(int day) {
         $$(byAttribute("draggable", "false")).findBy(text(valueOf(day))).click();
     }

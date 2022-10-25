@@ -13,7 +13,7 @@ public class CalendarWithTimeComponent extends CalendarComponent {
     public SelenideElement hoursLabel = $("p-dialog .ui-hour-picker");
     public SelenideElement minutesLabel = $("p-dialog .ui-minute-picker");
 
-    @Step("Select time: {time}")
+    @Step("Select time")
     public CalendarComponent selectTime(Time time) {
         int[] scrolls = Scrolls.getTimeScrollCount(time, parseInt(hoursLabel.text()),
                 parseInt(minutesLabel.text()));
