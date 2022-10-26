@@ -13,6 +13,7 @@ import ru.hostco.pp86.tests.ui.TestBase;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static io.restassured.RestAssured.given;
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME;
@@ -24,21 +25,27 @@ public class HealthSubTabApiTests extends TestBase {
 
     @DataProvider(name = "addReadingTestDp")
     public static Object[][] getIndicators() {
-        Object[][] i = Arrays.stream(Indicators.values()).map((s) -> new Indicators[] {s});
-        return new Object[][]{Indicators.values()};
+        Indicators[][] objects = new Indicators[][]{
+                Arrays.stream((Indicators.values())).map()
+
+        return Arrays.stream(Indicators.values()).map((i) -> new Object[]{i.id(), i.text()}).toArray();
     }
 
+    @Test(groups = {"API"}, dataProvider = "addReadingTestDp")
+    void test(Integer id, String text, String unit) {
+        System.out.println(text);
+    }
 
     @Test(groups = {"API"}, dataProvider = "addReadingTestDp")
-    void addReadingTest(Indicators indicator) {
+    void addReadingTest(Integer id, String text, String unit) {
         ReadingPojoModel readingPojo = new ReadingPojoModel()
                 .id(null)
                 .createDate(LocalDateTime.now().format(ISO_LOCAL_DATE_TIME))
-                .value(randomValue(indicator))
+//                .value(randomValue(indicator))
                 .indicator(new ReadingPojoModel.Indicator()
-                        .id(indicator.id())
-                        .name(indicator.text())
-                        .unit(indicator.unit()));
+                        .id(id)
+                        .name(text)
+                        .unit(unit));
         String path = envConfig.getBaseUrl() + "/api/pp/rest/health/saveAll";
 
         given()
