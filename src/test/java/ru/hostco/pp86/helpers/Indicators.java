@@ -1,12 +1,13 @@
 package ru.hostco.pp86.helpers;
 
 import com.github.javafaker.Faker;
+import ru.hostco.pp86.data.Indicator;
 
 public class Indicators {
 
     private static Faker faker = new Faker();
 
-    public static String randomValue(ru.hostco.pp86.data.Indicators indicator) {
+    public static String randomValueFor(Indicator indicator) {
         switch (indicator) {
             case AMBIVALENCE:
                 return String.valueOf(faker.number().numberBetween(1, 101));

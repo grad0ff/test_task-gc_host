@@ -6,7 +6,7 @@ import lombok.experimental.Accessors;
 
 @Data
 @Accessors(fluent = true)
-public class ReadingPojoModel {
+public class EntryPojoModel {
 
     private Integer id;
     private String createDate;

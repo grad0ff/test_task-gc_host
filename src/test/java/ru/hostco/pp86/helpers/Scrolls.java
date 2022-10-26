@@ -1,6 +1,6 @@
 package ru.hostco.pp86.helpers;
 
-import ru.hostco.pp86.data.Months;
+import ru.hostco.pp86.data.Month;
 
 public class Scrolls {
 
@@ -18,7 +18,7 @@ public class Scrolls {
     }
 
     public static int getDateScrollCount(int newMonth, int newYear, String actualMonth, int actualYear) {
-        int actualMonthNumber = Months.valueByRussian(actualMonth).numberOf();
+        int actualMonthNumber = Month.valueByRussian(actualMonth).numberOf();
         int deltaOfYear = newYear - actualYear;
         int deltaOfMonth = newMonth - actualMonthNumber;
         return deltaOfYear * 12 + deltaOfMonth;

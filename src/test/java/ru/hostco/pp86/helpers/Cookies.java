@@ -10,7 +10,7 @@ import java.util.Map;
 public class Cookies {
 
     /*
-     * returns cookies list for usage with browser
+     * Returns cookies list for usage with browser
      */
     public static List<Cookie> createUiCookies(Map<String, String> cookiesMap) {
         List<Cookie> cookies = new ArrayList<>();
@@ -19,7 +19,7 @@ public class Cookies {
     }
 
     /*
-     * puts all cookies in list into browser cookie storage
+     * Puts all cookies in list into browser cookie storage
      */
     public static void setUiCookies(List<Cookie> cookies) {
         cookies.forEach(WebDriverRunner.getWebDriver().manage()::addCookie);

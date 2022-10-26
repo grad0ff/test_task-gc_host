@@ -11,5 +11,4 @@ public class OtherTab implements Openable {
     public String getUrl() {
         return URL;
     }
-
 }

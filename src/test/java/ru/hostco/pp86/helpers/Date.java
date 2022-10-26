@@ -1,6 +1,6 @@
 package ru.hostco.pp86.helpers;
 
-import ru.hostco.pp86.data.Months;
+import ru.hostco.pp86.data.Month;
 
 import java.time.LocalDate;
 import java.util.Objects;
@@ -72,6 +72,10 @@ public class Date {
         return Objects.hash(dayNumber, monthNumber, year);
     }
 
+    /*
+     * Returns integer as string.
+     * If int < 10 adds 0 before String
+     */
     private static String intAsString(int item) {
         String asString = String.valueOf(item);
         if (0 < item && item < 10) {
@@ -80,6 +84,9 @@ public class Date {
         return asString;
     }
 
+    /*
+     * Returns integers array for date in string format
+     */
     private int[] parseInts(String dateAsString) {
         String[] splitDate = dateAsString.split("\\.");
         int dayNumber = Integer.parseInt(splitDate[0]);
@@ -88,10 +95,13 @@ public class Date {
         return new int[]{dayNumber, monthNumber, year};
     }
 
+    /*
+     * Returns true if integers in date are correct
+     */
     private static boolean isCorrect(int dayNumber, int monthNumber, int year) {
         assertThat(year).isPositive();
         assertThat(monthNumber).isBetween(1, 12);
-        Months month = Months.valueByNumber(monthNumber);
+        Month month = Month.valueByNumber(monthNumber);
         int maxDays = month.maxDays(year);
         assertThat(dayNumber).isBetween(1, maxDays);
         return true;

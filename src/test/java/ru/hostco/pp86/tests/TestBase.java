@@ -1,19 +1,21 @@
-package ru.hostco.pp86.tests.ui;
+package ru.hostco.pp86.tests;
 
 import com.codeborne.selenide.Configuration;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.logevents.SelenideLogger;
 import io.qameta.allure.selenide.AllureSelenide;
+import io.restassured.RestAssured;
+import io.restassured.builder.RequestSpecBuilder;
+import io.restassured.http.ContentType;
 import org.aeonbits.owner.ConfigFactory;
 import org.openqa.selenium.Cookie;
 import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeGroups;
-import org.testng.annotations.BeforeTest;
 import ru.hostco.pp86.config.CredentialsConfig;
 import ru.hostco.pp86.config.EnvironmentConfig;
-import ru.hostco.pp86.data.Browsers;
+import ru.hostco.pp86.data.Browser;
 
 import java.util.List;
 import java.util.Map;
@@ -29,26 +31,16 @@ public class TestBase {
     protected CredentialsConfig authConfig = ConfigFactory.create(CredentialsConfig.class);
     protected EnvironmentConfig envConfig = ConfigFactory.create(EnvironmentConfig.class);
 
-    @BeforeClass(groups = "ui")
+    @BeforeClass(groups = "UI")
     protected void beforeUiTests() {
-        configureDriver(Browsers.CHROME);
+        configureRemoteDriver(Browser.CHROME);
     }
 
-    @BeforeGroups(groups = "ui")
+    @BeforeGroups(groups = {"UI"})
     protected void prepareUiTest() {
         open("");
         Selenide.clearBrowserLocalStorage();
         Selenide.clearBrowserCookies();
-    }
-
-    @BeforeGroups(groups = {"authorized"})
-    protected void authorize() {
-        List<Cookie> cookies = createUiCookies(Map.of(authConfig.authCookieName(), authConfig.authCookieValue()));
-        setUiCookies(cookies);
-    }
-
-    @BeforeTest(groups = "ui")
-    protected void addListener() {
         SelenideLogger.addListener("Allure Selenide Listener", new AllureSelenide()
                 .screenshots(true)
                 .savePageSource(false)
@@ -56,13 +48,29 @@ public class TestBase {
                 .enableLogs(BROWSER, Level.WARNING));
     }
 
-    private void configureDriver(Browsers browser) {
+    @BeforeGroups(groups = {"AUTHORIZED"})
+    protected void authorize() {
+        List<Cookie> cookies = createUiCookies(Map.of(authConfig.authCookieName(), authConfig.authCookieValue()));
+        setUiCookies(cookies);
+    }
+
+
+    @BeforeGroups(groups = {"API"})
+    protected void configureApiTests() {
+        RestAssured.requestSpecification = new RequestSpecBuilder().setContentType(ContentType.JSON)
+                .addCookie(authConfig.authCookieName(), authConfig.authCookieValue())
+                .build();
+    }
+
+    private void configureRemoteDriver(Browser browser) {
         String browserName = browser.name().toLowerCase();
         String browserVersion = browser.version().toLowerCase();
         Configuration.browser = browserName;
-//        Configuration.browserCapabilities = getCapabilities(browserName, browserVersion);
         Configuration.baseUrl = envConfig.getBaseUrl();
-//        Configuration.remote = environmentConfig.getRemoteUrl();
+        if (System.getProperty("remote", "local").equals("remote")) {
+            Configuration.browserCapabilities = getCapabilities(browserName, browserVersion);
+            Configuration.remote = envConfig.getRemoteUrl();
+        }
     }
 
     private MutableCapabilities getCapabilities(String browserName, String browserVersion) {

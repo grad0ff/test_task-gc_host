@@ -67,6 +67,9 @@ public class Time {
         return asString;
     }
 
+    /*
+     * Returns integers array for time in string format
+     */
     private int[] parseInts(String timeAsString) {
         String[] splitTime = timeAsString.split(SEP);
         int hour = Integer.parseInt(splitTime[0]);
@@ -74,6 +77,9 @@ public class Time {
         return new int[]{hour, minute};
     }
 
+    /*
+     * Returns true if integers in time are correct
+     */
     private static boolean isCorrect(int hour, int minute) {
         assertThat(hour).isBetween(0, 23);
         assertThat(minute).isBetween(0, 59);

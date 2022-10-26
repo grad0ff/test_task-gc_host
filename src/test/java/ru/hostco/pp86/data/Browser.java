@@ -1,6 +1,6 @@
 package ru.hostco.pp86.data;
 
-public enum Browsers {
+public enum Browser {
 
     CHROME("100"),
     FIREFOX("98"),
@@ -8,7 +8,7 @@ public enum Browsers {
 
     private final String version;
 
-    Browsers(String version) {
+    Browser(String version) {
         this.version = version;
     }
 

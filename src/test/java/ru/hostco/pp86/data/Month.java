@@ -1,6 +1,6 @@
 package ru.hostco.pp86.data;
 
-public enum Months {
+public enum Month {
 
     JANUARY(31, "Январь"),
     FEBRUARY(28, "Февраль"),
@@ -18,20 +18,20 @@ public enum Months {
     private int maxDays;
     private final String russianName;
 
-    Months(int maxDays, String russianName) {
+    Month(int maxDays, String russianName) {
         this.maxDays = maxDays;
         this.russianName = russianName;
     }
 
-    public static Months valueByNumber(int number) {
-        for (Months month : Months.values()) {
+    public static Month valueByNumber(int number) {
+        for (Month month : Month.values()) {
             if (month.numberOf() == number) return month;
         }
         throw new NullPointerException();
     }
 
-    public static Months valueByRussian(String russianName) {
-        for (Months month : Months.values()) {
+    public static Month valueByRussian(String russianName) {
+        for (Month month : Month.values()) {
             if (month.russianName.equals(russianName)) return month;
         }
         throw new NullPointerException();

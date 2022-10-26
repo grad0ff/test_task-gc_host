@@ -1,6 +1,6 @@
 package ru.hostco.pp86.helpers;
 
-import ru.hostco.pp86.data.Months;
+import ru.hostco.pp86.data.Month;
 
 import java.time.LocalDate;
 import java.util.Random;
@@ -14,7 +14,7 @@ public class DateRandomizer {
     private static final int DAY_OF_MONTH = LocalDate.now().getDayOfMonth();
 
     /**
-     * Returns pseudo-random year in specified interval
+     * Returns pseudo-random year from specified interval
      */
     public static int randomYear(int start, int end) {
         assertThat(end).isPositive();
@@ -29,14 +29,14 @@ public class DateRandomizer {
     /**
      * Returns pseudo-random month
      */
-    public static Months randomMonth() {
+    public static Month randomMonth() {
         return randomMonth(1, 12);
     }
 
     /**
      * Returns pseudo-random month from specified interval
      */
-    public static Months randomMonth(int start, int end) {
+    public static Month randomMonth(int start, int end) {
         assertThat(end).isPositive();
         assertThat(start)
                 .isPositive()
@@ -46,29 +46,29 @@ public class DateRandomizer {
         int aSwitch = start + random;
         switch (aSwitch) {
             case 0:
-                return Months.JANUARY;
+                return Month.JANUARY;
             case 1:
-                return Months.FEBRUARY;
+                return Month.FEBRUARY;
             case 2:
-                return Months.MARCH;
+                return Month.MARCH;
             case 3:
-                return Months.APRIL;
+                return Month.APRIL;
             case 4:
-                return Months.MAY;
+                return Month.MAY;
             case 5:
-                return Months.JUNE;
+                return Month.JUNE;
             case 6:
-                return Months.JULY;
+                return Month.JULY;
             case 7:
-                return Months.AUGUST;
+                return Month.AUGUST;
             case 8:
-                return Months.SEPTEMBER;
+                return Month.SEPTEMBER;
             case 9:
-                return Months.OCTOBER;
+                return Month.OCTOBER;
             case 10:
-                return Months.NOVEMBER;
+                return Month.NOVEMBER;
             case 11:
-                return Months.DECEMBER;
+                return Month.DECEMBER;
         }
         return null;
     }
@@ -81,33 +81,36 @@ public class DateRandomizer {
     }
 
     /**
-     * Returns pseudo-random date for specific year of past
+     * Returns pseudo-random date from specified year of past
      */
     public static Date randomDateOfPast(int fromYear) {
         assertThat(fromYear)
                 .isPositive()
                 .isLessThanOrEqualTo(LocalDate.now().getYear());
         int year = randomYear(fromYear, ACTUAL_YEAR);
-        Months month = randomMonth(1, MONTH_VALUE);
+        Month month = randomMonth(1, MONTH_VALUE);
         assertThat(month).isNotNull();
         return createDate(year, month);
     }
 
     /**
-     * Returns pseudo-random date for specific year of future
+     * Returns pseudo-random date from specified year of future
      */
     public static Date randomDateOfFuture(int toYear) {
         assertThat(toYear)
                 .isPositive()
                 .isGreaterThanOrEqualTo(LocalDate.now().getYear());
         int year = randomYear(ACTUAL_YEAR, toYear);
-        Months month = randomMonth(MONTH_VALUE, 12);
+        Month month = randomMonth(MONTH_VALUE, 12);
         assertThat(month).isNotNull();
         return createDate(year, month);
 
     }
 
-    private static Date createDate(int year, Months month) {
+    /*
+     * Returns new Date instance from specified year and month
+     */
+    private static Date createDate(int year, Month month) {
         int monthNumber = month.numberOf();
         int maxDays = month.maxDays(year);
         int dayNumber = new Random().nextInt(maxDays) + 1;

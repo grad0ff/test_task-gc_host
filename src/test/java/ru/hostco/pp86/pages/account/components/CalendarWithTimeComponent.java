@@ -29,14 +29,12 @@ public class CalendarWithTimeComponent extends CalendarComponent {
         }
     }
 
-
     @Step("Select hours with scrolling down")
     public void fewScrollToPrevHour(int scrollsCount) {
         for (int i = 0; i < scrollsCount; i++) {
             scrollToPrevHour();
         }
     }
-
 
     @Step("Select minutes with scrolling up")
     public void scrollToNextMinute(int scrollsCount) {

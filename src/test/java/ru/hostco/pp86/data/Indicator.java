@@ -2,7 +2,7 @@ package ru.hostco.pp86.data;
 
 import java.util.Random;
 
-public enum Indicators {
+public enum Indicator {
 
     AMBIVALENCE(1, "Амбивалентность", "%"),
     HEALTH_STATUS(2, "Общее состояние здоровья", null),
@@ -19,16 +19,16 @@ public enum Indicators {
     private final String unit;
     private final int id;
 
-    Indicators(int id, String indicatorName, String unit) {
+    Indicator(int id, String indicatorName, String unit) {
         this.text = indicatorName;
         this.unit = unit;
         this.id = id;
     }
 
-    public static Indicators random() {
-        Indicators[] indicators = Indicators.values();
+    public static Indicator random() {
+        Indicator[] indicators = Indicator.values();
         int random = new Random().nextInt(indicators.length);
-        for (Indicators indicator : indicators) {
+        for (Indicator indicator : indicators) {
             if (indicator.ordinal() == random) return indicator;
         }
         return null;
