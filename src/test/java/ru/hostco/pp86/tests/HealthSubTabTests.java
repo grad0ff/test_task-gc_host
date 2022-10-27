@@ -210,7 +210,7 @@ public class HealthSubTabTests extends TestBase {
     /*
      * Imitate data adding into DB, adds records for each indicator type
      */
-    @Test(dataProvider = "addIndicatorsTestDataProvider")
+    @Test(groups = {"API"}, dataProvider = "addIndicatorsTestDataProvider")
     void dataAdding(Integer id, String text, String unit, String value) {
         String reqPath = envConfig.getBaseUrl() + "/api/pp/rest/health/saveAll";
 
@@ -233,7 +233,7 @@ public class HealthSubTabTests extends TestBase {
 
     @Ignore("Request's response as JSON format is not exist for data adding. " +
             "It's need for entry identification in DB and able manipulate it")
-    @Test(groups = {"API", "AUTHORIZED"})
+    @Test(groups = {"API"})
     void updateRecordTest() {
         EntryPojoModel pojo = prepareDB();
         String reqPath = envConfig.getBaseUrl() + "/api/pp/rest/health/saveAll";
