@@ -4,6 +4,9 @@ import ru.hostco.pp86.data.Month;
 
 public class Scrolls {
 
+    /*
+     * Returns integer array of scroll counts for hour and minute in new time
+     */
     public static int[] getTimeScrollCount(Time newTime, int actualHours, int actualMinutes) {
         int hourScrollCount = timeScrolls(newTime.getHours(), actualHours, 24);
         int minutesScrollCount = timeScrolls(newTime.getMinutes(), actualMinutes, 60);

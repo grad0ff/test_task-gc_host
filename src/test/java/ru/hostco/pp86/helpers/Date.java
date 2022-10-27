@@ -74,7 +74,7 @@ public class Date {
 
     /*
      * Returns integer as string.
-     * If int < 10 adds 0 before String
+     * If int < 10 adds 0 before returned string
      */
     private static String intAsString(int item) {
         String asString = String.valueOf(item);

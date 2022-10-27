@@ -7,6 +7,9 @@ public class Indicators {
 
     private static Faker faker = new Faker();
 
+    /*
+     * Returns value for specified indicator
+     */
     public static String randomValueFor(Indicator indicator) {
         switch (indicator) {
             case AMBIVALENCE:
