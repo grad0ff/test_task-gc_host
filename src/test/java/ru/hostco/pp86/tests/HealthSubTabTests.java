@@ -233,7 +233,7 @@ public class HealthSubTabTests extends TestBase {
 
     @Ignore("Request's response as JSON format is not exist for data adding. " +
             "It's need for entry identification in DB and able manipulate it")
-    @Test(groups = {"API"})
+    @Test(groups = {"API", "AUTHORIZED"})
     void updateRecordTest() {
         EntryPojoModel pojo = prepareDB();
         String reqPath = envConfig.getBaseUrl() + "/api/pp/rest/health/saveAll";
@@ -244,7 +244,7 @@ public class HealthSubTabTests extends TestBase {
 
     @Ignore("Request's response as JSON format is not exist for data adding. " +
             "It's need for entry identification in DB and able manipulate it")
-    @Test(groups = {"API"})
+    @Test(groups = {"API", "AUTHORIZED"})
     void deleteRecordTest() {
         EntryPojoModel pojo = prepareDB();
         String reqPath = envConfig.getBaseUrl() + "/api/pp/rest/health/saveAll";
@@ -273,29 +273,5 @@ public class HealthSubTabTests extends TestBase {
                 .then()
                 .statusCode(200);
         return pojo;
-    }
-
-
-    /*
-     * Imitate data adding into DB.
-     */
-    @Test(groups = {"API"})
-    void prepareDBTest() {
-        String reqPath = envConfig.getBaseUrl() + "/api/pp/rest/health/saveAll";
-        Indicator indicator = Indicator.random();
-        EntryPojoModel pojo = new EntryPojoModel()
-                .id(null)
-                .createDate(LocalDateTime.now().format(ISO_LOCAL_DATE_TIME))
-                .value(randomValueFor(indicator))
-                .indicator(new EntryPojoModel.Indicator()
-                        .id(indicator.id())
-                        .name(indicator.text())
-                        .unit(indicator.unit()));
-        given()
-                .body(gson.toJson(List.of(pojo)))
-                .when()
-                .post(reqPath)
-                .then()
-                .statusCode(200);
     }
 }
