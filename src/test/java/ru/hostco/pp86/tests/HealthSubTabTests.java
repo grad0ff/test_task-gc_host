@@ -5,7 +5,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import io.qameta.allure.Description;
 import io.qameta.allure.Story;
-import io.restassured.http.ContentType;
 import org.apache.commons.math3.util.Precision;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Ignore;
@@ -69,7 +68,7 @@ public class HealthSubTabTests extends TestBase {
         });
         step("click by submit", form::clickBySubmit);
         step("Check that recordTable contains data", () -> {
-            indicatorsTable.firstRecord.shouldHave(
+            indicatorsTable.firstRecord.scrollIntoView(false).shouldHave(
                     text(date + " " + time),
                     text(Indicator.TEMPERATURE.text()),
                     text(String.valueOf(temperature))
@@ -152,22 +151,16 @@ public class HealthSubTabTests extends TestBase {
         });
     }
 
-    @Ignore
-    @Description("Checks that reset date filters is possible")
-    @Story("User resets date filtering to default values")
-    @Test(groups = "AUTHORIZED")
-    void resetDatesFilterTest() {
-    }
 
     @Test(groups = {"UI", "API", "AUTHORIZED"})
-    void addRandomReadingTest() {
+    void addRandomIndicatorTest() {
         Indicator indicator = Indicator.random();
         IndicatorsTableComponent indicatorsTable = new IndicatorsTableComponent();
         LocalDateTime date = LocalDateTime.now();
         String dateAsString = date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
         String indicatorValue = randomValueFor(indicator);
         AtomicReference<EntryPojoModel> atomicReference = new AtomicReference<>();
-        String path = envConfig.getBaseUrl() + "/api/pp/rest/health/saveAll";
+        String reqPath = envConfig.getBaseUrl() + "/api/pp/rest/health/saveAll";
 
         atomicReference.set(new EntryPojoModel()
                 .id(null)
@@ -182,7 +175,7 @@ public class HealthSubTabTests extends TestBase {
             given()
                     .body(gson.toJson(List.of(atomicReference.get())))
                     .when()
-                    .post(path)
+                    .post(reqPath)
                     .then()
                     .statusCode(200);
         });
@@ -204,7 +197,7 @@ public class HealthSubTabTests extends TestBase {
         });
     }
 
-    @DataProvider(name = "addReadingTestDataProvider")
+    @DataProvider(name = "addIndicatorsTestDataProvider")
     public static Iterator<Object[]> getIndicators() {
         ArrayList<Object[]> objects = new ArrayList<>();
         Indicator[] indicators = Indicator.values();
@@ -215,11 +208,13 @@ public class HealthSubTabTests extends TestBase {
     }
 
     /*
-     * Imitate data adding into DB
+     * Imitate data adding into DB, adds records for each indicator type
      */
-    @Test(dataProvider = "addReadingTestDataProvider")
+    @Test(dataProvider = "addIndicatorsTestDataProvider")
     void dataAdding(Integer id, String text, String unit, String value) {
-        EntryPojoModel readingPojo = new EntryPojoModel()
+        String reqPath = envConfig.getBaseUrl() + "/api/pp/rest/health/saveAll";
+
+        EntryPojoModel pojo = new EntryPojoModel()
                 .id(null)
                 .createDate(LocalDateTime.now().format(ISO_LOCAL_DATE_TIME))
                 .value(value)
@@ -227,42 +222,43 @@ public class HealthSubTabTests extends TestBase {
                         .id(id)
                         .name(text)
                         .unit(unit));
-        String path = envConfig.getBaseUrl() + "/api/pp/rest/health/saveAll";
         given()
-                .cookie(authConfig.authCookieName(), authConfig.authCookieValue())
-                .contentType(ContentType.JSON)
-                .body(gson.toJson(List.of(readingPojo)))
+                .body(gson.toJson(List.of(pojo)))
                 .log().all()
                 .when()
-                .post(path)
+                .post(reqPath)
                 .then()
                 .statusCode(200);
     }
 
-    @Ignore("Response as JSON is not exist")
+    @Ignore("Request's response as JSON format is not exist for data adding. " +
+            "It's need for entry identification in DB and able manipulate it")
     @Test(groups = {"API"})
-    void updateReadingTest() {
-        EntryPojoModel readingPojo = prepareDB();
-        String path = envConfig.getBaseUrl() + "/api/pp/rest/health/saveAll";
+    void updateRecordTest() {
+        EntryPojoModel pojo = prepareDB();
+        String reqPath = envConfig.getBaseUrl() + "/api/pp/rest/health/saveAll";
 
-        step("Add record into indicator table with API", () -> {
-            given()
-                    .cookie(authConfig.authCookieName(), authConfig.authCookieValue())
-                    .contentType(ContentType.JSON)
-                    .body(gson.toJson(List.of(readingPojo)))
-                    .when()
-                    .post(path)
-                    .then()
-                    .statusCode(200);
-        });
+        // body of request
+    }
+
+
+    @Ignore("Request's response as JSON format is not exist for data adding. " +
+            "It's need for entry identification in DB and able manipulate it")
+    @Test(groups = {"API"})
+    void deleteRecordTest() {
+        EntryPojoModel pojo = prepareDB();
+        String reqPath = envConfig.getBaseUrl() + "/api/pp/rest/health/saveAll";
+
+        // body of request
     }
 
     /*
-     * Imitate data adding into DB
+     * Imitate data adding into DB.
      */
     private EntryPojoModel prepareDB() {
+        String reqPath = envConfig.getBaseUrl() + "/api/pp/rest/health/saveAll";
         Indicator indicator = Indicator.random();
-        EntryPojoModel entryPojo = new EntryPojoModel()
+        EntryPojoModel pojo = new EntryPojoModel()
                 .id(null)
                 .createDate(LocalDateTime.now().format(ISO_LOCAL_DATE_TIME))
                 .value(randomValueFor(indicator))
@@ -270,6 +266,36 @@ public class HealthSubTabTests extends TestBase {
                         .id(indicator.id())
                         .name(indicator.text())
                         .unit(indicator.unit()));
-        return entryPojo;
+        given()
+                .body(gson.toJson(List.of(pojo)))
+                .when()
+                .post(reqPath)
+                .then()
+                .statusCode(200);
+        return pojo;
+    }
+
+
+    /*
+     * Imitate data adding into DB.
+     */
+    @Test(groups = {"API"})
+    void prepareDBTest() {
+        String reqPath = envConfig.getBaseUrl() + "/api/pp/rest/health/saveAll";
+        Indicator indicator = Indicator.random();
+        EntryPojoModel pojo = new EntryPojoModel()
+                .id(null)
+                .createDate(LocalDateTime.now().format(ISO_LOCAL_DATE_TIME))
+                .value(randomValueFor(indicator))
+                .indicator(new EntryPojoModel.Indicator()
+                        .id(indicator.id())
+                        .name(indicator.text())
+                        .unit(indicator.unit()));
+        given()
+                .body(gson.toJson(List.of(pojo)))
+                .when()
+                .post(reqPath)
+                .then()
+                .statusCode(200);
     }
 }

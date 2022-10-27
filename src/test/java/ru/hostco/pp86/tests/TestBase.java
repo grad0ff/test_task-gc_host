@@ -57,7 +57,10 @@ public class TestBase {
 
     @BeforeGroups(groups = {"API"})
     protected void configureApiTests() {
-        RestAssured.requestSpecification = new RequestSpecBuilder().setContentType(ContentType.JSON)
+        System.out.println("configureApiTests");
+        RestAssured.requestSpecification = new RequestSpecBuilder()
+                .setRelaxedHTTPSValidation()
+                .setContentType(ContentType.JSON)
                 .addCookie(authConfig.authCookieName(), authConfig.authCookieValue())
                 .build();
     }
