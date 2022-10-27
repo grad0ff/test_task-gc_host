@@ -181,7 +181,7 @@ public class HealthSubTabTests extends TestBase {
         });
         step("Open health sub tab in browser", () -> open(subTab.getUrl()));
         step("Check that indicators table contains data", () -> {
-            indicatorsTable.firstRecord.shouldHave(
+            indicatorsTable.firstRecord.scrollIntoView(false).shouldHave(
                     text(date.format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"))),
                     text(indicator.text()),
                     text(indicatorValue)

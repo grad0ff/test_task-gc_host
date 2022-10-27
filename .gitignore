@@ -2,4 +2,4 @@
 .allure/
 build/
 target/
-t
+src/test/resources/config/
