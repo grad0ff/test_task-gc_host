@@ -1,4 +1,4 @@
-package ru.hostco.pp86.helpers;
+package ru.hostco.pp86.helpers.datetime;
 
 import ru.hostco.pp86.data.Month;
 

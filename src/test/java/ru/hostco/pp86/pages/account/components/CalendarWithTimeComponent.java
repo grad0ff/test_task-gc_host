@@ -2,8 +2,8 @@ package ru.hostco.pp86.pages.account.components;
 
 import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
-import ru.hostco.pp86.helpers.Scrolls;
-import ru.hostco.pp86.helpers.Time;
+import ru.hostco.pp86.helpers.datetime.Time;
+import ru.hostco.pp86.helpers.utils.Scrolls;
 
 import static com.codeborne.selenide.Selenide.$;
 import static java.lang.Integer.parseInt;

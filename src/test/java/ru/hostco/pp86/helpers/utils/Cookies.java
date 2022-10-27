@@ -1,4 +1,4 @@
-package ru.hostco.pp86.helpers;
+package ru.hostco.pp86.helpers.utils;
 
 import com.codeborne.selenide.WebDriverRunner;
 import org.openqa.selenium.Cookie;

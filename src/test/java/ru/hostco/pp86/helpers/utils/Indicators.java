@@ -1,4 +1,4 @@
-package ru.hostco.pp86.helpers;
+package ru.hostco.pp86.helpers.utils;
 
 import com.github.javafaker.Faker;
 import ru.hostco.pp86.data.Indicator;

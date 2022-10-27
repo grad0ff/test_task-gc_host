@@ -2,8 +2,8 @@ package ru.hostco.pp86.pages.account.components;
 
 import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
-import ru.hostco.pp86.helpers.Date;
-import ru.hostco.pp86.helpers.Scrolls;
+import ru.hostco.pp86.helpers.datetime.Date;
+import ru.hostco.pp86.helpers.utils.Scrolls;
 
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selectors.byAttribute;

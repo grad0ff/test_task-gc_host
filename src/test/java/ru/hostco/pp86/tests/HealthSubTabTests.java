@@ -1,22 +1,21 @@
 package ru.hostco.pp86.tests;
 
-import com.codeborne.selenide.Condition;
+import com.github.javafaker.Faker;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import io.qameta.allure.Description;
 import io.qameta.allure.Story;
-import org.apache.commons.math3.util.Precision;
+import org.apache.commons.lang3.StringUtils;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
 import ru.hostco.pp86.data.Indicator;
-import ru.hostco.pp86.helpers.Date;
-import ru.hostco.pp86.helpers.DateRandomizer;
-import ru.hostco.pp86.helpers.Time;
-import ru.hostco.pp86.helpers.TimeRandomizer;
-import ru.hostco.pp86.models.EntryPojoModel;
-import ru.hostco.pp86.pages.account.components.IndicatorFormComponent;
-import ru.hostco.pp86.pages.account.components.IndicatorsTableComponent;
+import ru.hostco.pp86.helpers.datetime.Date;
+import ru.hostco.pp86.helpers.datetime.DateRandomizer;
+import ru.hostco.pp86.helpers.datetime.Time;
+import ru.hostco.pp86.models.EntriesPojoModel;
+import ru.hostco.pp86.pages.account.components.EntriesTableComponent;
+import ru.hostco.pp86.pages.account.components.IndicatorsAddingFormComponent;
 import ru.hostco.pp86.pages.account.tabs.subtabs.HealthSubTab;
 
 import java.time.LocalDateTime;
@@ -24,7 +23,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static com.codeborne.selenide.Condition.text;
@@ -35,29 +33,31 @@ import static io.qameta.allure.Allure.step;
 import static io.restassured.RestAssured.given;
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 import static org.assertj.core.api.Assertions.assertThat;
-import static ru.hostco.pp86.helpers.Indicators.randomValueFor;
+import static ru.hostco.pp86.helpers.utils.Indicators.randomValueFor;
 
-@Test(groups = {"OTHER_HEALTH"}, suiteName = "Health sub tab tests")
+//@Test(groups = {"OTHER_HEALTH"}, suiteName = "Health sub tab tests")
 public class HealthSubTabTests extends TestBase {
 
-    HealthSubTab subTab = new HealthSubTab();
-    Gson gson = new GsonBuilder().serializeNulls().setPrettyPrinting().create();
+    // TODO: 28.10.2022 Добавить аттачи
 
+    HealthSubTab healthSubTab = new HealthSubTab();
+    Gson gson = new GsonBuilder().serializeNulls().setPrettyPrinting().create();
+    Faker faker = new Faker();
 
     @Description("Checks that record adding is possible")
     @Story("User add new record into indicators table")
     @Test(groups = {"UI", "AUTHORIZED"})
     void addTemperatureIndicatorTest() {
-
-        IndicatorFormComponent form = subTab.indicatorForm;
-        IndicatorsTableComponent indicatorsTable = new IndicatorsTableComponent();
+        IndicatorsAddingFormComponent form = healthSubTab.indicatorForm;
+        EntriesTableComponent indicatorsTable = new EntriesTableComponent();
         Date date = Date.today();
-        Time time = TimeRandomizer.randomTime(0, 2);
-        double temperature = Precision.round(36.3 + new Random().nextDouble(), 1);
+        Time time = Time.now();
+        double temperature = faker.number().randomDouble(1, 36, 40);
 
-        step("Open health sub tab in browser", () -> open(subTab.getUrl()));
-        step("Click by indicator adding button", () -> subTab.clickByAddIndicatorButton());
+        step("Open health sub tab in browser", () -> open(healthSubTab.getUrl()));
+        step("Click by indicator adding button", () -> healthSubTab.clickByAddIndicatorButton());
         step("Select actual time and date in the inner calendar", () -> {
+            form.component.shouldBe(visible);
             form.clickByCalendarLink().calendar.component.shouldBe(visible);
             form.selectTime(time);
             form.selectDate(date);
@@ -66,8 +66,8 @@ public class HealthSubTabTests extends TestBase {
             sleep(500);
             form.setTemperature(temperature);
         });
-        step("click by submit", form::clickBySubmit);
-        step("Check that recordTable contains data", () -> {
+        step("Click by submit", form::clickBySubmit);
+        step("Check that entries table contains data", () -> {
             indicatorsTable.firstRecord.scrollIntoView(false).shouldHave(
                     text(date + " " + time),
                     text(Indicator.TEMPERATURE.text()),
@@ -77,28 +77,28 @@ public class HealthSubTabTests extends TestBase {
     }
 
     @Description("Checks that date filtering by first day of interval is possible")
-    @Story("User filters indicators table by first date of interval")
+    @Story("User filters entries table by first date of interval")
     @Test(groups = {"UI", "AUTHORIZED"})
     void setBeginningDateTest() {
         Date randomDate = DateRandomizer.randomDateOfPast(2022);
 
-        step("Open health sub tab", () -> open(subTab.getUrl()));
+        step("Open health sub tab", () -> open(healthSubTab.getUrl()));
         step("Select random date of beginning", () -> {
-            subTab.beginningDateField.shouldBe(visible);
-            subTab.clickByBeginningDateField().calendar.component.shouldBe(visible);
-            subTab.selectDate(randomDate);
+            healthSubTab.beginningDateField.shouldBe(visible);
+            healthSubTab.clickByBeginningDateField().calendar.component.shouldBe(visible);
+            healthSubTab.selectDate(randomDate);
         });
-        step("Check that date set correctly", () -> {
+        step("Check that date sets correctly", () -> {
             sleep(1000);
-            Date currentBeginningDate = new Date(subTab.beginningDateField.getValue());
-            assertThat(currentBeginningDate.toString())
+            String beginningDate = healthSubTab.beginningDateField.getValue();
+            assertThat(beginningDate)
                     .as("Beginning date assertion FAILED")
                     .isEqualTo(randomDate.toString());
         });
     }
 
     @Description("Checks that date filtering by last day of interval is possible")
-    @Story("User filters indicators table by last date of interval")
+    @Story("User filters entries table by last date of interval")
     @Test(groups = {"UI", "AUTHORIZED"})
     void setEndingDateTest() {
         HealthSubTab subTab = new HealthSubTab();
@@ -110,17 +110,17 @@ public class HealthSubTabTests extends TestBase {
             subTab.clickByEndingDateField().calendar.component.shouldBe(visible);
             subTab.selectDate(randomDate);
         });
-        step("Check that date set correctly", () -> {
+        step("Check that date sets correctly", () -> {
             sleep(1000);
-            Date currentEndDate = new Date(subTab.endDateField.getValue());
-            assertThat(currentEndDate.toString())
+            String givenDate = subTab.endDateField.getValue();
+            assertThat(givenDate)
                     .as("Ending date assertion FAILED")
                     .isEqualTo(randomDate.toString());
         });
     }
 
     @Description("Checks that date filtering by interval is possible")
-    @Story("User filters indicators table by first day and last day of interval")
+    @Story("User filters entries table by first day and last day of interval")
     @Test(groups = {"UI", "AUTHORIZED"})
     void setDatesFilterTest() {
         HealthSubTab subTab = new HealthSubTab();
@@ -138,7 +138,7 @@ public class HealthSubTabTests extends TestBase {
             subTab.clickByEndingDateField().calendar.component.shouldBe(visible);
             subTab.selectDate(randomEndingDate);
         });
-        step("Check that dates set correctly", () -> {
+        step("Check that dates sets correctly", () -> {
             sleep(1000);
             Date currentBeginningDate = new Date(subTab.beginningDateField.getValue());
             assertThat(currentBeginningDate.toString())
@@ -151,27 +151,25 @@ public class HealthSubTabTests extends TestBase {
         });
     }
 
-
     @Test(groups = {"UI", "API", "AUTHORIZED"})
     void addRandomIndicatorTest() {
         Indicator indicator = Indicator.random();
-        IndicatorsTableComponent indicatorsTable = new IndicatorsTableComponent();
+        EntriesTableComponent entriesTable = new EntriesTableComponent();
         LocalDateTime date = LocalDateTime.now();
         String dateAsString = date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
         String indicatorValue = randomValueFor(indicator);
-        AtomicReference<EntryPojoModel> atomicReference = new AtomicReference<>();
+        AtomicReference<EntriesPojoModel> atomicReference = new AtomicReference<>();
         String reqPath = envConfig.getBaseUrl() + "/api/pp/rest/health/saveAll";
-
-        atomicReference.set(new EntryPojoModel()
+        atomicReference.set(new EntriesPojoModel()
                 .id(null)
                 .createDate(dateAsString)
                 .value(indicatorValue)
-                .indicator(new EntryPojoModel.Indicator()
+                .indicator(new EntriesPojoModel.Indicator()
                         .id(indicator.id())
                         .name(indicator.text())
                         .unit(indicator.unit())));
 
-        step("Add record into indicator table with API", () -> {
+        step("Add record into entries table with API", () -> {
             given()
                     .body(gson.toJson(List.of(atomicReference.get())))
                     .when()
@@ -179,21 +177,25 @@ public class HealthSubTabTests extends TestBase {
                     .then()
                     .statusCode(200);
         });
-        step("Open health sub tab in browser", () -> open(subTab.getUrl()));
-        step("Check that indicators table contains data", () -> {
-            indicatorsTable.firstRecord.scrollIntoView(false).shouldHave(
+        step("Open health sub tab in browser", () -> open(healthSubTab.getUrl()));
+        step("Check that entries table contains data", () -> {
+            String value = indicatorValue;
+            if (indicator.equals(Indicator.PRESSURE)) {
+                value = getPressureValue(indicatorValue);
+            }
+            entriesTable.firstRecord.scrollIntoView(false).shouldHave(
                     text(date.format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"))),
                     text(indicator.text()),
-                    text(indicatorValue)
+                    text(value)
             );
         });
     }
 
     @Test(groups = {"UI", "API", "AUTHORIZED"}, dependsOnMethods = "dataAdding")
     void navigatePanelIsVisibleTest() {
-        step("Open health sub tab", () -> open(subTab.getUrl()));
-        step("Check that footer of indicators table is visible", () -> {
-            subTab.indicatorsTableFooter.shouldBe(Condition.visible).shouldHave();
+        step("Open health sub tab", () -> open(healthSubTab.getUrl()));
+        step("Check that footer of entries table is visible", () -> {
+            healthSubTab.indicatorsTableFooter.shouldBe(visible);
         });
     }
 
@@ -202,6 +204,7 @@ public class HealthSubTabTests extends TestBase {
         ArrayList<Object[]> objects = new ArrayList<>();
         Indicator[] indicators = Indicator.values();
         for (Indicator indicator : indicators) {
+            objects.add(new Object[]{indicator.id(), indicator.text(), indicator.unit(), randomValueFor(indicator)});
             objects.add(new Object[]{indicator.id(), indicator.text(), indicator.unit(), randomValueFor(indicator)});
         }
         return objects.iterator();
@@ -213,18 +216,16 @@ public class HealthSubTabTests extends TestBase {
     @Test(groups = {"API"}, dataProvider = "addIndicatorsTestDataProvider")
     void dataAdding(Integer id, String text, String unit, String value) {
         String reqPath = envConfig.getBaseUrl() + "/api/pp/rest/health/saveAll";
-
-        EntryPojoModel pojo = new EntryPojoModel()
+        EntriesPojoModel pojo = new EntriesPojoModel()
                 .id(null)
                 .createDate(LocalDateTime.now().format(ISO_LOCAL_DATE_TIME))
                 .value(value)
-                .indicator(new EntryPojoModel.Indicator()
+                .indicator(new EntriesPojoModel.Indicator()
                         .id(id)
                         .name(text)
                         .unit(unit));
         given()
                 .body(gson.toJson(List.of(pojo)))
-                .log().all()
                 .when()
                 .post(reqPath)
                 .then()
@@ -232,37 +233,43 @@ public class HealthSubTabTests extends TestBase {
     }
 
     @Ignore("Request's response as JSON format is not exist for data adding. " +
-            "It's need for entry identification in DB and able manipulate it")
+            "It's need for indicator identification in DB and able manipulate it")
     @Test(groups = {"API"})
     void updateRecordTest() {
-        EntryPojoModel pojo = prepareDB();
+        EntriesPojoModel pojo = prepareDB();
         String reqPath = envConfig.getBaseUrl() + "/api/pp/rest/health/saveAll";
 
         // body of request
     }
 
-
     @Ignore("Request's response as JSON format is not exist for data adding. " +
-            "It's need for entry identification in DB and able manipulate it")
+            "It's need for indicator identification in DB and able manipulate it")
     @Test(groups = {"API", "AUTHORIZED"})
     void deleteRecordTest() {
-        EntryPojoModel pojo = prepareDB();
+        EntriesPojoModel pojo = prepareDB();
         String reqPath = envConfig.getBaseUrl() + "/api/pp/rest/health/saveAll";
 
         // body of request
+    }
+
+    private String getPressureValue(String indicatorValue) {
+        String value;
+        String[] split = StringUtils.strip(indicatorValue, "[\"]").split("\", \"");
+        value = String.format("%s/ %s", split[0], split[1]);
+        return value;
     }
 
     /*
      * Imitate data adding into DB.
      */
-    private EntryPojoModel prepareDB() {
+    private EntriesPojoModel prepareDB() {
         String reqPath = envConfig.getBaseUrl() + "/api/pp/rest/health/saveAll";
         Indicator indicator = Indicator.random();
-        EntryPojoModel pojo = new EntryPojoModel()
+        EntriesPojoModel pojo = new EntriesPojoModel()
                 .id(null)
                 .createDate(LocalDateTime.now().format(ISO_LOCAL_DATE_TIME))
                 .value(randomValueFor(indicator))
-                .indicator(new EntryPojoModel.Indicator()
+                .indicator(new EntriesPojoModel.Indicator()
                         .id(indicator.id())
                         .name(indicator.text())
                         .unit(indicator.unit()));

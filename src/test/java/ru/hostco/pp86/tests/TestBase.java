@@ -20,24 +20,29 @@ import ru.hostco.pp86.data.Browser;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static com.codeborne.selenide.Selenide.open;
 import static io.qameta.allure.selenide.LogType.BROWSER;
-import static ru.hostco.pp86.helpers.Cookies.createUiCookies;
-import static ru.hostco.pp86.helpers.Cookies.setUiCookies;
+import static ru.hostco.pp86.helpers.utils.Cookies.createUiCookies;
+import static ru.hostco.pp86.helpers.utils.Cookies.setUiCookies;
 
 public class TestBase {
 
     protected CredentialsConfig authConfig = ConfigFactory.create(CredentialsConfig.class);
     protected EnvironmentConfig envConfig = ConfigFactory.create(EnvironmentConfig.class);
+    private Logger logger = Logger.getLogger(TestBase.class.getName());
+
 
     @BeforeClass(groups = "UI")
     protected void beforeUiTests() {
+        logger.info("Preparing UI Tests");
         configureRemoteDriver(Browser.CHROME);
     }
 
     @BeforeGroups(groups = {"UI"})
     protected void prepareUiTest() {
+        logger.info("Preparing Selenide");
         open("");
         Selenide.clearBrowserLocalStorage();
         Selenide.clearBrowserCookies();
@@ -49,7 +54,8 @@ public class TestBase {
     }
 
     @BeforeGroups(groups = {"AUTHORIZED"})
-    protected void authorize() {
+    protected void setBrowserCookies() {
+        logger.info("Setting Browser Cookies");
         List<Cookie> cookies = createUiCookies(Map.of(authConfig.authCookieName(), authConfig.authCookieValue()));
         setUiCookies(cookies);
     }
@@ -57,7 +63,7 @@ public class TestBase {
 
     @BeforeGroups(groups = {"API"})
     protected void configureApiTests() {
-        System.out.println("configureApiTests");
+        logger.info("Configuring Api Tests");
         RestAssured.requestSpecification = new RequestSpecBuilder()
                 .setRelaxedHTTPSValidation()
                 .setContentType(ContentType.JSON)
@@ -81,8 +87,8 @@ public class TestBase {
         capabilities.setCapability("browserName", browserName);
         capabilities.setCapability("browserVersion", browserVersion);
         capabilities.setCapability("selenoid:options", Map.of(
-//                "enableVNC", true,
-//                "enableVideo", true
+                "enableVNC", true,
+                "enableVideo", true
         ));
         return capabilities;
     }
