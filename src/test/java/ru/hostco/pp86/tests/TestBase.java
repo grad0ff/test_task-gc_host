@@ -11,8 +11,7 @@ import org.aeonbits.owner.ConfigFactory;
 import org.openqa.selenium.Cookie;
 import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.remote.DesiredCapabilities;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeGroups;
+import org.testng.annotations.BeforeTest;
 import ru.hostco.pp86.config.CredentialsConfig;
 import ru.hostco.pp86.config.EnvironmentConfig;
 import ru.hostco.pp86.data.Browser;
@@ -34,14 +33,44 @@ public class TestBase {
     private Logger logger = Logger.getLogger(TestBase.class.getName());
 
 
-    @BeforeClass(groups = "UI")
-    protected void beforeUiTests() {
-        logger.info("Preparing UI Tests");
-        configureRemoteDriver(Browser.CHROME);
+    @BeforeTest(groups = {"UI"})
+    protected void beforeTests() {
+        prepareTestEnvironment();
+        prepareUiTests();
     }
 
-    @BeforeGroups(groups = {"UI"})
-    protected void prepareUiTest() {
+    @BeforeTest(groups = {"UI"})
+    protected void setBrowserCookies() {
+        logger.info("Setting Browser Cookies");
+        List<Cookie> cookies = createUiCookies(Map.of(authConfig.authCookieName(), authConfig.authCookieValue()));
+        setUiCookies(cookies);
+    }
+
+    @BeforeTest(groups = {"API_UI"})
+    protected void configureApiTests() {
+        logger.info("Configuring Api Tests");
+        RestAssured.requestSpecification = new RequestSpecBuilder()
+                .setRelaxedHTTPSValidation()
+                .setContentType(ContentType.JSON)
+                .addCookie(authConfig.authCookieName(), authConfig.authCookieValue())
+                .build();
+    }
+
+    private void prepareTestEnvironment() {
+        logger.info("Preparing Test Environment");
+        Configuration.baseUrl = envConfig.getBaseUrl();
+        Browser browser = Browser.CHROME;
+        String browserName = browser.toString();
+        String browserVersion = browser.version();
+        if (System.getProperty("remote", "local").equals("remote")) {
+            configureRemoteDriver(browserName, browserVersion);
+        } else {
+            Configuration.browser = browserName;
+            Configuration.browserVersion = browserVersion;
+        }
+    }
+
+    private void prepareUiTests() {
         logger.info("Preparing Selenide");
         open("");
         Selenide.clearBrowserLocalStorage();
@@ -53,36 +82,12 @@ public class TestBase {
                 .enableLogs(BROWSER, Level.WARNING));
     }
 
-    @BeforeGroups(groups = {"AUTHORIZED"})
-    protected void setBrowserCookies() {
-        logger.info("Setting Browser Cookies");
-        List<Cookie> cookies = createUiCookies(Map.of(authConfig.authCookieName(), authConfig.authCookieValue()));
-        setUiCookies(cookies);
+    private void configureRemoteDriver(String browserName, String browserVersion) {
+        Configuration.remote = envConfig.getRemoteUrl();
+        Configuration.browserCapabilities = getRemoteCapabilities(browserName, browserVersion);
     }
 
-
-    @BeforeGroups(groups = {"API"})
-    protected void configureApiTests() {
-        logger.info("Configuring Api Tests");
-        RestAssured.requestSpecification = new RequestSpecBuilder()
-                .setRelaxedHTTPSValidation()
-                .setContentType(ContentType.JSON)
-                .addCookie(authConfig.authCookieName(), authConfig.authCookieValue())
-                .build();
-    }
-
-    private void configureRemoteDriver(Browser browser) {
-        String browserName = browser.name().toLowerCase();
-        String browserVersion = browser.version().toLowerCase();
-        Configuration.browser = browserName;
-        Configuration.baseUrl = envConfig.getBaseUrl();
-        if (System.getProperty("remote", "local").equals("remote")) {
-            Configuration.browserCapabilities = getCapabilities(browserName, browserVersion);
-            Configuration.remote = envConfig.getRemoteUrl();
-        }
-    }
-
-    private MutableCapabilities getCapabilities(String browserName, String browserVersion) {
+    private MutableCapabilities getRemoteCapabilities(String browserName, String browserVersion) {
         DesiredCapabilities capabilities = new DesiredCapabilities();
         capabilities.setCapability("browserName", browserName);
         capabilities.setCapability("browserVersion", browserVersion);

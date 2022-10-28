@@ -15,4 +15,9 @@ public enum Browser {
     public String version() {
         return version;
     }
+
+    @Override
+    public String toString() {
+        return name().toLowerCase();
+    }
 }

@@ -1,15 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
 
-<suite name="Tests">
-    <test name="User Account Tests">
+<suite name="Health Tab Tests">
+    <test name="UI">
         <groups>
             <run>
+                <include name="UI"/>
                 <include name="AUTHORIZED"/>
             </run>
         </groups>
-        <packages>
-            <package name="ru.hostco.pp86.tests.*"/>
-        </packages>
     </test>
+    <test name="API_UI">
+        <groups>
+            <run>
+                <include name="API_UI"/>
+                <include name="AUTHORIZED"/>
+            </run>
+        </groups>
+    </test>
+    <packages>
+        <package name="ru.hostco.pp86.tests.*"/>
+    </packages>
 </suite>

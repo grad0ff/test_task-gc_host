@@ -14,6 +14,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <aspectj.version>1.9.8</aspectj.version>
         <allure.version>2.19.0</allure.version>
+        <suiteXmlFile>testng.xml</suiteXmlFile>
     </properties>
 
     <dependencies>
@@ -110,6 +111,10 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.22.2</version>
                 <configuration>
+                    <suiteXmlFiles>
+                         pass testng.xml files as argument from command line
+                        <suiteXmlFile>${suiteXmlFile}</suiteXmlFile>
+                    </suiteXmlFiles>
                     <argLine>
                         -javaagent:"${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar"
                     </argLine>

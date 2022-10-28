@@ -1,5 +1,7 @@
 package ru.hostco.pp86.tests;
 
+import com.codeborne.selenide.ElementsCollection;
+import com.codeborne.selenide.SelenideElement;
 import com.github.javafaker.Faker;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -27,15 +29,14 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Selenide.open;
-import static com.codeborne.selenide.Selenide.sleep;
+import static com.codeborne.selenide.Selenide.*;
 import static io.qameta.allure.Allure.step;
 import static io.restassured.RestAssured.given;
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 import static org.assertj.core.api.Assertions.assertThat;
 import static ru.hostco.pp86.helpers.utils.Indicators.randomValueFor;
 
-//@Test(groups = {"OTHER_HEALTH"}, suiteName = "Health sub tab tests")
+@Test(suiteName = "Health sub tab tests")
 public class HealthSubTabTests extends TestBase {
 
     // TODO: 28.10.2022 Добавить аттачи
@@ -46,7 +47,7 @@ public class HealthSubTabTests extends TestBase {
 
     @Description("Checks that record adding is possible")
     @Story("User add new record into indicators table")
-    @Test(groups = {"UI", "AUTHORIZED"})
+    @Test(groups = {"UI"})
     void addTemperatureIndicatorTest() {
         IndicatorsAddingFormComponent form = healthSubTab.indicatorForm;
         EntriesTableComponent indicatorsTable = new EntriesTableComponent();
@@ -74,11 +75,13 @@ public class HealthSubTabTests extends TestBase {
                     text(String.valueOf(temperature))
             );
         });
+
+        cleanDb();
     }
 
     @Description("Checks that date filtering by first day of interval is possible")
     @Story("User filters entries table by first date of interval")
-    @Test(groups = {"UI", "AUTHORIZED"})
+    @Test(groups = {"UI"})
     void setBeginningDateTest() {
         Date randomDate = DateRandomizer.randomDateOfPast(2022);
 
@@ -99,7 +102,7 @@ public class HealthSubTabTests extends TestBase {
 
     @Description("Checks that date filtering by last day of interval is possible")
     @Story("User filters entries table by last date of interval")
-    @Test(groups = {"UI", "AUTHORIZED"})
+    @Test(groups = {"UI"})
     void setEndingDateTest() {
         HealthSubTab subTab = new HealthSubTab();
         Date randomDate = DateRandomizer.randomDateOfFuture(2023);
@@ -121,7 +124,7 @@ public class HealthSubTabTests extends TestBase {
 
     @Description("Checks that date filtering by interval is possible")
     @Story("User filters entries table by first day and last day of interval")
-    @Test(groups = {"UI", "AUTHORIZED"})
+    @Test(groups = {"UI"})
     void setDatesFilterTest() {
         HealthSubTab subTab = new HealthSubTab();
         Date randomBeginningDate = DateRandomizer.randomDateOfPast(2022);
@@ -151,7 +154,7 @@ public class HealthSubTabTests extends TestBase {
         });
     }
 
-    @Test(groups = {"UI", "API", "AUTHORIZED"})
+    @Test(groups = {"API_UI"})
     void addRandomIndicatorTest() {
         Indicator indicator = Indicator.random();
         EntriesTableComponent entriesTable = new EntriesTableComponent();
@@ -189,13 +192,15 @@ public class HealthSubTabTests extends TestBase {
                     text(value)
             );
         });
+        cleanDb();
     }
 
-    @Test(groups = {"UI", "API", "AUTHORIZED"}, dependsOnMethods = "dataAdding")
+    @Test(groups = {"API_UI"}, dependsOnMethods = "dataAdding")
     void navigatePanelIsVisibleTest() {
         step("Open health sub tab", () -> open(healthSubTab.getUrl()));
         step("Check that footer of entries table is visible", () -> {
             healthSubTab.indicatorsTableFooter.shouldBe(visible);
+            cleanDb();
         });
     }
 
@@ -213,7 +218,7 @@ public class HealthSubTabTests extends TestBase {
     /*
      * Imitate data adding into DB, adds records for each indicator type
      */
-    @Test(groups = {"API"}, dataProvider = "addIndicatorsTestDataProvider")
+    @Test(groups = {"API_UI"}, dataProvider = "addIndicatorsTestDataProvider")
     void dataAdding(Integer id, String text, String unit, String value) {
         String reqPath = envConfig.getBaseUrl() + "/api/pp/rest/health/saveAll";
         EntriesPojoModel pojo = new EntriesPojoModel()
@@ -238,18 +243,18 @@ public class HealthSubTabTests extends TestBase {
     void updateRecordTest() {
         EntriesPojoModel pojo = prepareDB();
         String reqPath = envConfig.getBaseUrl() + "/api/pp/rest/health/saveAll";
-
         // body of request
+        cleanDb();
     }
 
     @Ignore("Request's response as JSON format is not exist for data adding. " +
             "It's need for indicator identification in DB and able manipulate it")
-    @Test(groups = {"API", "AUTHORIZED"})
+    @Test(groups = {"API"})
     void deleteRecordTest() {
         EntriesPojoModel pojo = prepareDB();
         String reqPath = envConfig.getBaseUrl() + "/api/pp/rest/health/saveAll";
-
         // body of request
+        cleanDb();
     }
 
     private String getPressureValue(String indicatorValue) {
@@ -280,5 +285,29 @@ public class HealthSubTabTests extends TestBase {
                 .then()
                 .statusCode(200);
         return pojo;
+    }
+
+    /* imitates DB cleaning */
+    void cleanDb() {
+        ElementsCollection indicatorsList = $$(".table .td");
+        SelenideElement delButton = $$(".table .td .button").findBy(text("Удалить"));
+        SelenideElement delSubmitButton = $(".ui-dialog-footer .button");
+        SelenideElement noDataElement = $(".account-content .no-data");
+        SelenideElement controlBlock = $(".control-health-block");
+
+        open(healthSubTab.getUrl());
+        while (true) {
+            controlBlock.shouldBe(visible);
+            if (noDataElement.is(visible)) break;
+            if (indicatorsList.first().is(visible)) {
+                indicatorsList.forEach((element) -> {
+                    delButton.shouldBe(visible).click();
+                    switchTo().activeElement();
+                    delSubmitButton.shouldBe(visible).click();
+                    sleep(1000);
+                });
+            }
+            refresh();
+        }
     }
 }
