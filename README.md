@@ -23,38 +23,23 @@ mvn clean test
 <table>
      <tr>
         <td>
-        <a href="https://allure.autotests.cloud/project/1579/dashboards">
-        <img src="h![img.png](img.png)ttps://user-images.githubusercontent.com/72714071/190111941-3557dd8b-7577-4cc2-8dfa-31baf5407208.png">
+        <img src="https://user-images.githubusercontent.com/72714071/198580851-a48020fc-2b21-4699-9824-f94df0e46c34.png">
         </a>
         </td>
         <td>
-        <a href="https://allure.autotests.cloud/project/1579/test-cases/12193?treeId=3022">
-        <img src="https://user-images.githubusercontent.com/72714071/190112291-12574fd2-8ec6-40d0-ae68-c1d514759419.png">
+        <img src="https://user-images.githubusercontent.com/72714071/198581099-609f506a-2dd1-4669-b07d-3165f7d3ca85.png">
         </a>
         </td>
     </tr>
     <tr>
         <td>
-        <a href="https://jenkins.autotests.cloud/job/013-grad0ff-github/allure/">
-        <img src="https://user-images.githubusercontent.com/72714071/190112805-8a1de909-ad70-42a0-a77b-d61f8f6315ce.png">
+        <img src="https://user-images.githubusercontent.com/72714071/198581543-22909ee4-e5d5-406a-b4c3-7675cae74ce3.png">
         </a>
         </td>
         <td>
-        <a href="https://jenkins.autotests.cloud/job/013-grad0ff-github/allure/#suites/8296116fb5ecdcc50ae710349f189d84">
-        <img src="https://user-images.githubusercontent.com/72714071/190113647-6d3fa879-7738-4b57-8dc6-fe3666deb04c.png">
+        <img src="https://user-images.githubusercontent.com/72714071/198581699-f1a06aa8-1951-4cbb-98ea-c6fc7b2d3843.png">
         </a>
         </td>
     </tr>
-    <tr>
-        <td>
-        <a href="https://jenkins.autotests.cloud/job/013-grad0ff-github/allure/#suites/9ae7943627b178f740fc1bf87589174c/f69d1b013c7c0036/">
-        <img src="https://user-images.githubusercontent.com/72714071/190114014-33ab5a9a-8087-4d2b-b07e-0430c108fad2.png">
-        </a>
-        </td>
-        <td>
-        <a href="https://jenkins.autotests.cloud/job/013-grad0ff-github/allure/#graph">
-        <img src="https://user-images.githubusercontent.com/72714071/190114161-e05363e0-79a9-4d9f-9301-e25bf42c3bd3.png">
-        </a>
-        </td>
 </table>
 
