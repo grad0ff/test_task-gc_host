@@ -1,4 +1,4 @@
-<a href="https://github.com/"><img alt="github.com" height="50" src="readme_files/technologies/github.svg"/></a>
+<a href="https://github.com/"><img alt="github.com" height="50" src="https://user-images.githubusercontent.com/72714071/198582282-f0ff9bc4-486c-40c6-a894-a231157ff367.png"></a>
 # ГК ХОСТ. Автотесты на Java
 
 <a id="console"></a>
