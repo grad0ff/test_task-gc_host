@@ -7,6 +7,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import io.qameta.allure.Description;
 import io.qameta.allure.Story;
+import io.restassured.config.RedirectConfig;
+import io.restassured.config.RestAssuredConfig;
+import io.restassured.response.Response;
 import org.apache.commons.lang3.StringUtils;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Ignore;
@@ -25,12 +28,14 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.*;
 import static io.qameta.allure.Allure.step;
+import static io.restassured.RestAssured.config;
 import static io.restassured.RestAssured.given;
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -309,5 +314,39 @@ public class HealthSubTabTests extends TestBase {
             }
             refresh();
         }
+    }
+
+    @Test(groups = "API")
+    void getAuthCookies() {
+//        RestAssuredConfig config1 = config().redirect(new RedirectConfig().followRedirects(false));
+
+        Map<String, String> cookies0 = given()
+//                .config(config1)
+                .relaxedHTTPSValidation()
+                .accept("text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9")
+                .urlEncodingEnabled(true)
+                .cookie("_ym_d", "1666958446")
+                .queryParam("redirectURI","https://pp86.hostco.ru:/callback")
+//                .log().all()
+                .get("https://pp86.hostco.ru/api/pp/patient/auth/esia")
+                .then()
+                .log().status()
+//                .log().cookies()
+                .extract().cookies();
+
+        Response response1 = given()
+                .relaxedHTTPSValidation()
+                .accept("text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9")
+                .cookie("_ym_d", "1666958446")
+                .cookie(cookies0.get("AUTH_SESSION_ID"))
+                .cookie(cookies0.get("AUTH_SESSION_ID_LEGACY"))
+                .log().all()
+                .queryParam("service", "https://pp86.hostco.ru/api/pp/auth/verify?redirectURI=https%3A%2F%2Fcas-test.hostco.ru%2Frealms%2Fesia%2Fprotocol%2Fcas%2Flogin%3Fservice%3Dhttps%253A%252F%252Fpp86.hostco.ru%252Fapi%252Fpatient%252Fauth%252Fesia%252Fverify%253FredirectURI%253Dhttps%25253A%25252F%25252Fpp86.hostco.ru%25253A%25252Fcallback")
+                .get("https://cas-test.hostco.ru/realms/esia/protocol/cas/login")
+                .then()
+                .log().all()
+                .extract().response();
+        System.out.println();
+
     }
 }

@@ -33,20 +33,20 @@ public class TestBase {
     private Logger logger = Logger.getLogger(TestBase.class.getName());
 
 
-    @BeforeTest(groups = {"UI"})
+//    @BeforeTest(groups = {"UI"})
     protected void beforeTests() {
         prepareTestEnvironment();
         prepareUiTests();
     }
 
-    @BeforeTest(groups = {"UI"})
+//    @BeforeTest(groups = {"UI"})
     protected void setBrowserCookies() {
         logger.info("Setting Browser Cookies");
         List<Cookie> cookies = createUiCookies(Map.of(authConfig.authCookieName(), authConfig.authCookieValue()));
         setUiCookies(cookies);
     }
 
-    @BeforeTest(groups = {"API_UI"})
+//    @BeforeTest(groups = {"API_UI"})
     protected void configureApiTests() {
         logger.info("Configuring Api Tests");
         RestAssured.requestSpecification = new RequestSpecBuilder()
