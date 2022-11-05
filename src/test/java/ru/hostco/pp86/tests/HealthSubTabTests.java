@@ -9,6 +9,7 @@ import io.qameta.allure.Description;
 import io.qameta.allure.Story;
 import io.restassured.config.RedirectConfig;
 import io.restassured.config.RestAssuredConfig;
+import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import org.apache.commons.lang3.StringUtils;
 import org.testng.annotations.DataProvider;
@@ -35,7 +36,6 @@ import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.*;
 import static io.qameta.allure.Allure.step;
-import static io.restassured.RestAssured.config;
 import static io.restassured.RestAssured.given;
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -292,6 +292,7 @@ public class HealthSubTabTests extends TestBase {
         return pojo;
     }
 
+
     /* imitates DB cleaning */
     void cleanDb() {
         ElementsCollection indicatorsList = $$(".table .td");
@@ -316,37 +317,62 @@ public class HealthSubTabTests extends TestBase {
         }
     }
 
+
     @Test(groups = "API")
     void getAuthCookies() {
 //        RestAssuredConfig config1 = config().redirect(new RedirectConfig().followRedirects(false));
 
-        Map<String, String> cookies0 = given()
+        var cookies0 = given()
 //                .config(config1)
                 .relaxedHTTPSValidation()
                 .accept("text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9")
                 .urlEncodingEnabled(true)
-                .cookie("_ym_d", "1666958446")
-                .queryParam("redirectURI","https://pp86.hostco.ru:/callback")
+                .cookie("_ym_d", "1667583294")
+                .queryParam("redirectURI", "https://pp86.hostco.ru:/callback")
 //                .log().all()
                 .get("https://pp86.hostco.ru/api/pp/patient/auth/esia")
                 .then()
-                .log().status()
-//                .log().cookies()
+//                .log().status()
+                .log().cookies()
                 .extract().cookies();
 
         Response response1 = given()
                 .relaxedHTTPSValidation()
                 .accept("text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9")
-                .cookie("_ym_d", "1666958446")
-                .cookie(cookies0.get("AUTH_SESSION_ID"))
-                .cookie(cookies0.get("AUTH_SESSION_ID_LEGACY"))
-                .log().all()
+                .cookie("_ym_d", "1667583294")
+                .cookies(cookies0)
+//                .log().all()
                 .queryParam("service", "https://pp86.hostco.ru/api/pp/auth/verify?redirectURI=https%3A%2F%2Fcas-test.hostco.ru%2Frealms%2Fesia%2Fprotocol%2Fcas%2Flogin%3Fservice%3Dhttps%253A%252F%252Fpp86.hostco.ru%252Fapi%252Fpatient%252Fauth%252Fesia%252Fverify%253FredirectURI%253Dhttps%25253A%25252F%25252Fpp86.hostco.ru%25253A%25252Fcallback")
                 .get("https://cas-test.hostco.ru/realms/esia/protocol/cas/login")
                 .then()
+//                .log().all()
+                .extract().response();
+        String url = response1.htmlPath().getNode("**.find {it.@id=='kc-form-login'}").getAttribute("action");
+//        List<String> queryParams = Arrays.stream(StringUtils.split(s, "?&")).collect(Collectors.toList());
+
+
+        Response response3 = given()
+                .relaxedHTTPSValidation()
+                .contentType("application/x-www-form-urlencoded")
+                .config(new RestAssuredConfig().redirect(new RedirectConfig().maxRedirects(1)))
+                .accept("text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9")
+                .cookie("_ym_d", "1667583294")
+                .cookies(cookies0)
+                .formParams(Map.of("username","7145064357","password","123","credentialId",""))
+                .post(url)
+                .then()
                 .log().all()
                 .extract().response();
-        System.out.println();
 
+
+//        given()
+//                .contentType("application/x-www-form-urlencoded")
+//                .accept("text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9")
+//                .cookie("_ym_d", "1666958446")
+//                .cookies(cookies0)
+//                .log().all()
+//                .post(url)
+//                .then()
+//                .log().all();
     }
 }
