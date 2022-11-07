@@ -7,12 +7,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import io.qameta.allure.Description;
 import io.qameta.allure.Story;
-import io.restassured.RestAssured;
-import io.restassured.config.RedirectConfig;
-import io.restassured.config.RestAssuredConfig;
-import io.restassured.http.ContentType;
-import io.restassured.response.Response;
-import io.restassured.specification.RequestSpecification;
 import org.apache.commons.lang3.StringUtils;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Ignore;
@@ -28,7 +22,9 @@ import ru.hostco.pp86.pages.account.tabs.subtabs.HealthSubTab;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static com.codeborne.selenide.Condition.text;
@@ -314,69 +310,5 @@ public class HealthSubTabTests extends TestBase {
             }
             refresh();
         }
-    }
-
-
-    @Test(groups = "API")
-    void getAuthCookies() {
-//        RestAssuredConfig config1 = config().redirect(new RedirectConfig().followRedirects(false));
-
-        var response0 = given()
-//                .redirects()
-//                .allowCircular(true)
-                .urlEncodingEnabled(true)
-                .relaxedHTTPSValidation()
-//                .config(config1)
-                .accept("text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9")
-//                .log().all()
-                .get("https://pp86.hostco.ru/api/pp/patient/auth/esia?redirectURI=https%3A%2F%2Fpp86.hostco.ru%3A%2Fcallback")
-                .then()
-//                .log().status()
-                .log().cookies()
-                .extract().response();
-
-        String url = response0.htmlPath().getNode("**.find {it.@id=='kc-form-login'}").getAttribute("action");
-        Map<String, String>cookies = response0.cookies();
-        cookies.remove("AUTH_SESSION_ID_LEGACY");
-
-
-        var response1 = given()
-//                .redirects().follow(false)
-                .urlEncodingEnabled(true)
-                .relaxedHTTPSValidation()
-//                .accept("text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9")
-                .contentType("application/x-www-form-urlencoded")
-                .cookies(response0.cookies())
-                .formParams(Map.of("username","7145064357","password","123","credentialId",""))
-                .post(url)
-                .then()
-                .log().all()
-                .extract().response();
-
-
-//        var response2 = given().redirects().follow(false).relaxedHTTPSValidation()
-//                .accept("text/html; charset=utf-8")//                .cookies(response0.cookies())
-////                .log().all()
-//                .get()
-//                .then()
-////                .log().all()
-//                .extract().response();
-////        String url = response1.htmlPath().getNode("**.find {it.@id=='kc-form-login'}").getAttribute("action");
-////        List<String> queryParams = Arrays.stream(StringUtils.split(s, "?&")).collect(Collectors.toList());
-
-
-    }
-
-    @Test
-    void f() {
-        var res = given().relaxedHTTPSValidation()
-                .auth()
-                .preemptive()
-                .basic(authConfig.getLogin(), authConfig.getPassword())
-                .formParams(Map.of("username","7145064357","password","123","credentialId",""))
-                .when()
-                .post("https://cas-test.hostco.ru/realms/esia/login-actions/authenticate")
-                .then()
-                .log().all();
     }
 }
